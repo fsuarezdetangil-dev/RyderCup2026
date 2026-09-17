@@ -90,3 +90,4 @@ Las preferencias recogidas son:
 4. Avituallamiento sábado (entre Foursomes y Fourball)
 5. Avituallamiento domingo (durante el partido — es la comida del día)
 6. Menú cena sábado en Los Berengueles (carne/pescado/vegetariano)
+

@@ -1,0 +1,1835 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#0A0A0A">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>XIV Ryder Cup Córdoba</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+:root {
+  --bg: #0A0A0A;
+  --gold: #C9A052;
+  --gold-dim: rgba(201,160,82,0.4);
+  --white: #FFFFFF;
+  --gray: #A0A0A0;
+  --surface: #161616;
+  --nav-h: 64px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: var(--bg);
+  color: var(--white);
+  font-family: 'Inter', sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+.bebas { font-family: 'Bebas Neue', cursive; }
+.playfair { font-family: 'Playfair Display', serif; }
+.inter { font-family: 'Inter', sans-serif; }
+.gold { color: var(--gold); }
+.gray { color: var(--gray); }
+
+/* Nav */
+#nav {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  height: var(--nav-h);
+  background: var(--bg);
+  border-top: 1px solid var(--gold);
+  display: flex;
+  z-index: 100;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+.nav-tab {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  cursor: pointer;
+  min-height: 44px;
+  position: relative;
+  color: #505050;
+  transition: color 0.15s;
+  border: none;
+  background: none;
+  -webkit-tap-highlight-color: transparent;
+}
+.nav-tab.active { color: var(--gold); }
+.nav-tab.active::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 20%; right: 20%;
+  height: 2px;
+  background: var(--gold);
+}
+.nav-tab svg { width: 22px; height: 22px; }
+.nav-label { font-size: 10px; font-family: 'Inter', sans-serif; font-weight: 500; }
+
+/* Sections */
+.section { display: none; padding-bottom: calc(var(--nav-h) + env(safe-area-inset-bottom) + 16px); }
+.section.active { display: block; }
+
+/* Gold separator */
+.sep { height: 1px; background: var(--gold-dim); margin: 16px 0; }
+.sep-full { height: 1px; background: var(--gold-dim); }
+
+/* Cards */
+.card {
+  background: var(--surface);
+  border-left: 3px solid var(--gold);
+  padding: 16px;
+  margin-bottom: 12px;
+}
+
+/* Hero */
+#hero {
+  position: relative;
+  min-height: 40vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 24px 20px 20px;
+  background: linear-gradient(135deg, #1a1208 0%, #0d0d0d 100%);
+  overflow: hidden;
+}
+#hero-img {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  object-fit: cover;
+  z-index: 0;
+  opacity: 0;
+  transition: opacity 0.5s;
+}
+#hero-img.loaded { opacity: 1; }
+#hero-overlay {
+  position: absolute; inset: 0;
+  background: rgba(0,0,0,0.60);
+  z-index: 1;
+}
+#hero-content { position: relative; z-index: 2; }
+#hero-title {
+  font-family: 'Bebas Neue', cursive;
+  font-size: clamp(52px, 14vw, 80px);
+  color: var(--white);
+  line-height: 0.9;
+  letter-spacing: 2px;
+  cursor: default;
+  user-select: none;
+}
+#hero-sub { color: #ccc; font-size: 14px; margin-top: 6px; letter-spacing: 1px; }
+.hero-sep { height: 1px; background: var(--gold); margin-top: 16px; }
+
+/* Scoreboard */
+.score-block {
+  padding: 20px;
+  text-align: center;
+}
+.score-teams {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+.score-team { flex: 1; text-align: center; }
+.score-team-name {
+  font-family: 'Bebas Neue', cursive;
+  font-size: 22px;
+  letter-spacing: 2px;
+  color: var(--gray);
+  text-transform: uppercase;
+}
+.score-num {
+  font-family: 'Bebas Neue', cursive;
+  font-size: 72px;
+  color: var(--gold);
+  line-height: 1;
+}
+.score-trophy { color: var(--gold); font-size: 28px; }
+.score-caption { font-size: 11px; color: var(--gray); letter-spacing: 1px; text-transform: uppercase; margin-top: 4px; }
+
+/* Edition scoreboard */
+.ed-score-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.ed-score-table td, .ed-score-table th {
+  padding: 10px 8px;
+  border-bottom: 1px solid var(--gold-dim);
+}
+.ed-score-table th { font-family: 'Inter', sans-serif; font-weight: 600; font-size: 11px; color: var(--gray); text-transform: uppercase; }
+.ed-score-table .total-row { background: var(--surface); border: 1px solid var(--gold-dim); }
+.ed-score-table .total-row td { font-weight: 700; color: var(--gold); font-size: 15px; }
+
+/* Agenda */
+.day-selector {
+  display: flex;
+  margin: 16px;
+  border: 1px solid var(--gold);
+}
+.day-btn {
+  flex: 1;
+  padding: 10px 4px;
+  text-align: center;
+  font-family: 'Inter', sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  cursor: pointer;
+  color: var(--gold);
+  background: transparent;
+  border: none;
+  transition: background 0.15s, color 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.day-btn + .day-btn { border-left: 1px solid var(--gold); }
+.day-btn.active { background: var(--gold); color: #000; }
+
+.day-content { display: none; padding: 0 16px; animation: fadeIn 0.15s ease; }
+.day-content.active { display: block; }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+.event-card {
+  position: relative;
+  height: 120px;
+  border-left: 3px solid var(--gold);
+  margin-bottom: 12px;
+  overflow: hidden;
+  cursor: pointer;
+  background: var(--surface);
+  -webkit-tap-highlight-color: transparent;
+}
+.event-card-bg {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  object-fit: cover;
+  z-index: 0;
+}
+.event-card-overlay {
+  position: absolute; inset: 0; z-index: 1;
+}
+.event-card-content {
+  position: relative; z-index: 2;
+  padding: 14px 16px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.event-time {
+  font-family: 'Bebas Neue', cursive;
+  font-size: 20px;
+  color: var(--gold);
+  line-height: 1;
+}
+.event-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--white);
+  line-height: 1.2;
+}
+.event-sub { font-size: 11px; color: #ccc; }
+.event-card-bg.loaded { opacity: 1 !important; }
+
+/* Slide-up panel */
+#panel-overlay {
+  display: none;
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.6);
+  z-index: 200;
+}
+#panel-overlay.open { display: block; }
+#panel {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  height: 85vh;
+  background: var(--bg);
+  border-top: 1px solid var(--gold);
+  z-index: 201;
+  transform: translateY(100%);
+  transition: transform 0.25s ease-out;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+#panel.open { transform: translateY(0); }
+#panel-header {
+  position: sticky; top: 0;
+  background: var(--bg);
+  border-bottom: 1px solid var(--gold-dim);
+  padding: 16px 20px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  z-index: 1;
+}
+#panel-close {
+  font-family: 'Inter', sans-serif;
+  font-size: 22px;
+  color: var(--gold);
+  background: none; border: none;
+  cursor: pointer;
+  padding: 4px 8px;
+  min-width: 44px; min-height: 44px;
+  display: flex; align-items: center; justify-content: center;
+}
+#panel-body { padding: 20px; }
+.panel-time { font-family: 'Bebas Neue', cursive; font-size: 22px; color: var(--gold); }
+.panel-title { font-family: 'Playfair Display', serif; font-size: 20px; font-weight: 700; }
+.panel-section { margin-top: 16px; }
+.panel-section h4 { font-size: 11px; color: var(--gray); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
+.panel-section p, .panel-section li { font-size: 14px; line-height: 1.6; color: #ddd; }
+.panel-section ul { padding-left: 16px; }
+.maps-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--gold);
+  font-size: 13px;
+  text-decoration: none;
+  margin-top: 8px;
+  min-height: 44px;
+}
+.maps-link:hover { text-decoration: underline; }
+.note-gold { background: rgba(201,160,82,0.1); border-left: 3px solid var(--gold); padding: 10px 12px; font-size: 13px; color: var(--gold); margin-top: 12px; }
+.menu-item { font-size: 13px; color: #ccc; padding: 4px 0; }
+
+/* Equipos */
+.team-bg {
+  position: relative;
+  min-height: 120px;
+  display: flex; align-items: center; justify-content: center;
+  background: linear-gradient(135deg, #0f1a0a 0%, #0d0d0d 100%);
+  overflow: hidden;
+  padding: 24px 16px;
+}
+.team-bg-img {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 0.5s;
+}
+.team-bg-img.loaded { opacity: 1; }
+.team-bg-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.75); }
+.teams-grid {
+  display: grid;
+  grid-template-columns: 1fr 1px 1fr;
+  gap: 0;
+  margin: 0 16px;
+}
+.team-col { padding: 12px 8px; }
+.team-col-sep { background: var(--gold-dim); }
+.team-header { margin-bottom: 12px; padding-bottom: 10px; border-bottom: 1px solid var(--gold-dim); }
+.team-name { font-family: 'Bebas Neue', cursive; font-size: 24px; color: var(--gold); letter-spacing: 2px; }
+.team-cap { font-size: 11px; color: var(--gray); margin-top: 2px; }
+.player-row { display: flex; align-items: flex-start; gap: 8px; margin-bottom: 10px; padding-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+.player-avatar {
+  width: 36px; height: 36px; min-width: 36px;
+  background: var(--surface);
+  border: 1px solid var(--gold-dim);
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Bebas Neue', cursive;
+  font-size: 18px;
+  color: var(--gold);
+}
+.player-info { flex: 1; min-width: 0; }
+.player-apodo { font-family: 'Playfair Display', serif; font-size: 13px; color: var(--gold); display: flex; align-items: center; gap: 4px; }
+.cap-badge { font-family: 'Inter', sans-serif; font-size: 9px; background: var(--gold); color: #000; padding: 1px 4px; font-weight: 700; }
+.player-name { font-size: 10px; color: var(--gray); margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.player-hcp { font-size: 10px; color: #666; margin-top: 1px; }
+.player-pct { font-size: 10px; color: var(--gold); margin-top: 2px; }
+
+/* Info */
+.info-card {
+  background: var(--surface);
+  border-left: 3px solid var(--gold);
+  padding: 16px;
+  margin: 0 16px 12px;
+}
+.info-card h3 { font-family: 'Playfair Display', serif; font-size: 16px; font-weight: 700; margin-bottom: 8px; }
+.info-row { font-size: 13px; color: #ccc; padding: 4px 0; display: flex; gap: 8px; }
+.info-label { color: var(--gray); min-width: 70px; }
+.info-link { color: var(--gold); text-decoration: none; }
+.tel-link { color: var(--gold); text-decoration: none; }
+.warn { color: #f5a623; font-size: 12px; margin-top: 4px; }
+.parking-row { font-size: 12px; color: #ccc; padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
+.parking-row strong { color: var(--white); }
+
+/* Yo section */
+.yo-card {
+  background: var(--surface);
+  border-left: 3px solid var(--gold);
+  padding: 16px;
+  margin: 0 16px 12px;
+}
+.yo-card h3 { font-size: 14px; font-weight: 600; margin-bottom: 12px; color: var(--white); }
+.yo-card .q-note { font-size: 12px; color: var(--gold); margin-top: 8px; background: rgba(201,160,82,0.08); padding: 8px 10px; border-left: 2px solid var(--gold); }
+.radio-opt, .check-opt {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 0;
+  cursor: pointer;
+  min-height: 44px;
+}
+.radio-opt input, .check-opt input { accent-color: var(--gold); width: 18px; height: 18px; cursor: pointer; }
+.radio-opt label, .check-opt label { font-size: 14px; color: #ccc; cursor: pointer; flex: 1; }
+.check-grid { display: grid; grid-template-columns: 1fr 1fr; }
+.progress-bar-wrap { background: #222; height: 4px; border-radius: 0; margin-top: 6px; }
+.progress-bar { height: 4px; background: var(--gold); transition: width 0.3s; }
+.sub-select {
+  background: var(--bg);
+  border: 1px solid var(--gold-dim);
+  color: var(--white);
+  padding: 8px 12px;
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  margin-top: 8px;
+  width: 100%;
+  -webkit-appearance: none;
+}
+.name-select-wrap { padding: 16px; }
+.name-select {
+  width: 100%;
+  background: var(--surface);
+  border: 1px solid var(--gold);
+  color: var(--white);
+  padding: 12px 16px;
+  font-family: 'Inter', sans-serif;
+  font-size: 15px;
+  -webkit-appearance: none;
+}
+.wa-btn {
+  display: block;
+  width: calc(100% - 32px);
+  margin: 8px 16px 0;
+  background: var(--gold);
+  color: #000;
+  font-family: 'Bebas Neue', cursive;
+  font-size: 22px;
+  letter-spacing: 2px;
+  text-align: center;
+  padding: 14px;
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
+  min-height: 54px;
+  transition: opacity 0.2s;
+}
+.wa-btn:disabled, .wa-btn.disabled { opacity: 0.35; pointer-events: none; }
+.progress-txt { font-size: 12px; color: var(--gold); margin: 0 16px 4px; }
+
+/* Historial */
+.historial-toggle {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 16px;
+  cursor: pointer;
+  color: var(--gold);
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  border-top: 1px solid var(--gold-dim);
+  -webkit-tap-highlight-color: transparent;
+  min-height: 44px;
+}
+.historial-content { display: none; overflow-x: auto; padding: 0 16px 16px; }
+.historial-content.open { display: block; }
+.hist-table { width: 100%; border-collapse: collapse; font-size: 12px; min-width: 300px; }
+.hist-table th { color: var(--gray); font-size: 10px; text-transform: uppercase; padding: 6px 4px; border-bottom: 1px solid var(--gold-dim); }
+.hist-table td { padding: 7px 4px; border-bottom: 1px solid rgba(255,255,255,0.04); }
+.hist-table .win-locos { color: #e8a; }
+.hist-table .win-lobos { color: var(--gold); }
+
+/* Admin */
+#admin-overlay {
+  display: none; position: fixed; inset: 0;
+  background: var(--bg);
+  z-index: 300;
+  overflow-y: auto;
+}
+#admin-overlay.open { display: block; }
+.admin-header {
+  position: sticky; top: 0;
+  background: var(--bg);
+  border-bottom: 1px solid var(--gold);
+  padding: 16px 20px;
+  display: flex; align-items: center; justify-content: space-between;
+  z-index: 1;
+}
+.admin-section { padding: 20px 16px; border-bottom: 1px solid var(--gold-dim); }
+.admin-section h3 { font-family: 'Bebas Neue', cursive; font-size: 22px; color: var(--gold); margin-bottom: 12px; }
+.pairing-row { display: grid; grid-template-columns: 1fr auto 1fr; gap: 8px; align-items: center; margin-bottom: 8px; }
+.pairing-row span { text-align: center; font-size: 11px; color: var(--gray); }
+.admin-select {
+  width: 100%; background: var(--surface); border: 1px solid var(--gold-dim);
+  color: var(--white); padding: 8px; font-family: 'Inter', sans-serif; font-size: 12px;
+  -webkit-appearance: none;
+}
+.result-row { display: grid; grid-template-columns: auto 1fr; gap: 10px; align-items: center; margin-bottom: 8px; }
+.result-row .match-label { font-size: 12px; color: var(--gray); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.result-select {
+  background: var(--surface); border: 1px solid var(--gold-dim);
+  color: var(--white); padding: 6px 8px; font-family: 'Inter', sans-serif; font-size: 12px;
+  -webkit-appearance: none; width: 100%;
+}
+.admin-btn {
+  display: block; width: 100%; padding: 14px;
+  font-family: 'Bebas Neue', cursive; font-size: 20px; letter-spacing: 2px;
+  border: none; cursor: pointer; margin-top: 8px;
+}
+.admin-btn-gold { background: var(--gold); color: #000; }
+.admin-btn-red { background: #8b1a1a; color: var(--white); }
+
+/* PIN */
+#pin-overlay {
+  display: none; position: fixed; inset: 0;
+  background: rgba(0,0,0,0.9);
+  z-index: 400;
+  align-items: center; justify-content: center;
+  flex-direction: column; gap: 20px;
+}
+#pin-overlay.open { display: flex; }
+#pin-input {
+  width: 140px; background: var(--surface);
+  border: 1px solid var(--gold); color: var(--white);
+  font-family: 'Bebas Neue', cursive; font-size: 36px;
+  text-align: center; padding: 12px; letter-spacing: 8px;
+}
+#pin-err { color: #e55; font-size: 13px; min-height: 20px; }
+
+/* Partidos en juego */
+.match-row { font-size: 12px; color: #ccc; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.05); display: flex; justify-content: space-between; align-items: center; }
+.match-result { font-family: 'Bebas Neue', cursive; font-size: 14px; }
+.match-result.W { color: var(--gold); }
+.match-result.L { color: #888; }
+.match-result.H { color: #aaa; }
+
+/* Section title */
+.sec-title { font-family: 'Bebas Neue', cursive; font-size: 28px; color: var(--gold); padding: 20px 16px 8px; letter-spacing: 2px; }
+.sec-sub { font-size: 12px; color: var(--gray); padding: 0 16px 16px; }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════ MAIN APP ═══════════════════ -->
+<main id="app">
+
+<!-- ═══ INICIO ═══ -->
+<section id="sec-inicio" class="section active">
+
+  <!-- Hero -->
+  <div id="hero">
+    <img id="hero-img" src="img/campo-hero.jpg" alt="Campo" width="800" height="500" loading="eager" onload="this.classList.add('loaded')">
+    <div id="hero-overlay"></div>
+    <div id="hero-content">
+      <div id="hero-title" class="bebas" id="tap-title">XIV RYDER CUP</div>
+      <div id="hero-sub" class="inter">Córdoba · 2–4 Octubre 2025</div>
+      <div style="display:flex;align-items:center;gap:10px;margin-top:10px;">
+        <img src="img/logo-locos.jpg" style="height:30px;width:auto;background:#fff;padding:2px;border:1px solid rgba(201,160,82,0.5);" alt="Locos" loading="eager">
+        <div style="flex:1;height:1px;background:rgba(201,160,82,0.5);"></div>
+        <img src="img/logo-lobos.jpg" style="height:30px;width:auto;filter:invert(1);" alt="Lobos" loading="eager">
+      </div>
+      <div class="hero-sep" style="margin-top:10px;"></div>
+    </div>
+  </div>
+
+  <!-- Marcador histórico de la serie -->
+  <div class="score-block">
+    <div class="bebas" style="font-size:12px;color:var(--gray);letter-spacing:2px;margin-bottom:12px;">MARCADOR HISTÓRICO DE LA SERIE</div>
+    <div class="score-teams">
+      <div class="score-team">
+        <img src="img/logo-locos.jpg" style="height:52px;width:auto;background:#fff;padding:3px;border:1px solid var(--gold-dim);margin-bottom:8px;" alt="Locos" loading="lazy">
+        <div class="score-team-name">LOCOS</div>
+        <div class="score-num">8</div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:6px;">
+        <div class="score-trophy">🏆</div>
+      </div>
+      <div class="score-team">
+        <img src="img/logo-lobos.jpg" style="height:52px;width:auto;filter:invert(1);margin-bottom:8px;" alt="Lobos" loading="lazy">
+        <div class="score-team-name">LOBOS</div>
+        <div class="score-num">4</div>
+      </div>
+    </div>
+    <div class="score-caption">Lobos defienden el trofeo · XIV Edición</div>
+  </div>
+
+  <div class="sep-full"></div>
+
+  <!-- Marcador XIV edición -->
+  <div style="padding:16px;">
+    <div class="bebas" style="font-size:20px;color:var(--gold);letter-spacing:2px;margin-bottom:12px;">MARCADOR XIV EDICIÓN</div>
+    <div id="edition-pre" style="font-size:13px;color:var(--gray);text-align:center;padding:12px 0;">La competición comienza el sábado 3 de octubre</div>
+    <div id="edition-score" style="display:none;">
+      <table class="ed-score-table">
+        <thead><tr>
+          <th>Sesión</th>
+          <th><img src="img/logo-locos.jpg" style="height:16px;width:auto;background:#fff;padding:1px;vertical-align:middle;margin-right:3px;" alt="">Locos</th>
+          <th><img src="img/logo-lobos.jpg" style="height:16px;width:auto;filter:invert(1);vertical-align:middle;margin-right:3px;" alt="">Lobos</th>
+        </tr></thead>
+        <tbody>
+          <tr><td>Foursomes Sáb.</td><td id="sc-fs-locos">—</td><td id="sc-fs-lobos">—</td></tr>
+          <tr><td>Fourball Sáb.</td><td id="sc-fb-locos">—</td><td id="sc-fb-lobos">—</td></tr>
+          <tr style="background:rgba(201,160,82,0.07);"><td><strong>Parcial Sáb.</strong></td><td id="sc-par-locos" style="font-weight:700">—</td><td id="sc-par-lobos" style="font-weight:700">—</td></tr>
+          <tr><td>Singles Dom.</td><td id="sc-sg-locos">—</td><td id="sc-sg-lobos">—</td></tr>
+          <tr class="total-row"><td><strong>TOTAL</strong></td><td id="sc-tot-locos"><strong>—</strong></td><td id="sc-tot-lobos"><strong>—</strong></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Partidos en juego -->
+  <div id="matches-block" style="display:none;padding:0 16px 16px;">
+    <div class="sep-full" style="margin-bottom:12px;"></div>
+    <div class="bebas" style="font-size:18px;color:var(--gold);letter-spacing:2px;margin-bottom:8px;">PARTIDOS</div>
+    <div id="matches-list"></div>
+  </div>
+
+  <div class="sep-full"></div>
+
+  <!-- Historial ediciones -->
+  <div class="historial-toggle" onclick="toggleHistorial()" id="historial-toggle-btn">
+    <span>Ver historial completo (I–XIII)</span>
+    <span id="hist-arrow">▾</span>
+  </div>
+  <div class="historial-content" id="historial-content">
+    <table class="hist-table">
+      <thead><tr><th>Ed.</th><th>Año</th><th>Venue</th><th>Locos</th><th>Lobos</th><th>Ganador</th></tr></thead>
+      <tbody>
+        <tr><td>I</td><td>2013</td><td>Castiello (Gijón)</td><td>3.25</td><td>5.75</td><td class="win-lobos">Lobos</td></tr>
+        <tr><td>II</td><td>2014</td><td>Layos Golf</td><td>5</td><td>7</td><td class="win-lobos">Lobos</td></tr>
+        <tr><td>III</td><td>2015</td><td>Las Pinaillas</td><td>7</td><td>5</td><td class="win-locos">Locos</td></tr>
+        <tr><td>IV</td><td>2016</td><td>Montecastillo</td><td>7.75</td><td>7.25</td><td class="win-locos">Locos</td></tr>
+        <tr><td>V</td><td>2017</td><td>La Galiana</td><td>8</td><td>7</td><td class="win-locos">Locos</td></tr>
+        <tr><td>VI</td><td>2018</td><td>Isla de Valdecañas</td><td>8</td><td>7</td><td class="win-locos">Locos</td></tr>
+        <tr><td>VII</td><td>2019</td><td>La Manga</td><td>7.25</td><td>7.75</td><td class="win-lobos">Lobos</td></tr>
+        <tr><td>VIII</td><td>2020</td><td>Bco. Santander</td><td>10</td><td>5</td><td class="win-locos">Locos</td></tr>
+        <tr><td>IX</td><td>2021</td><td>N. Sancti Petri</td><td>10</td><td>5</td><td class="win-locos">Locos</td></tr>
+        <tr><td>X</td><td>2022</td><td>Assoufid (Marrakech)</td><td>8.25</td><td>6.75</td><td class="win-locos">Locos</td></tr>
+        <tr><td>XI</td><td>2023</td><td>Puerto Sherry</td><td>8</td><td>7</td><td class="win-locos">Locos</td></tr>
+        <tr><td>XII</td><td>2024</td><td>La Faisanera</td><td>5</td><td>10</td><td class="win-lobos">Lobos</td></tr>
+        <tr><td>XIII</td><td>2025</td><td>El Saler</td><td>7.5</td><td>7.5</td><td class="win-lobos">Empate → Lobos</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ═══ AGENDA ═══ -->
+<section id="sec-agenda" class="section">
+  <div class="sec-title">AGENDA</div>
+
+  <div class="day-selector">
+    <button class="day-btn active" onclick="showDay(0,this)">VIERNES 2</button>
+    <button class="day-btn" onclick="showDay(1,this)">SÁBADO 3</button>
+    <button class="day-btn" onclick="showDay(2,this)">DOMINGO 4</button>
+  </div>
+
+  <!-- VIERNES -->
+  <div class="day-content active" id="day-0">
+    <div class="event-card" onclick="openPanel('mezquita')">
+      <img class="event-card-bg" src="img/mezquita-noche.jpg" width="400" height="120" loading="lazy" onload="this.classList.add('loaded')" style="opacity:0;transition:opacity 0.5s;">
+      <div class="event-card-overlay" style="background:rgba(0,0,0,0.65);"></div>
+      <div class="event-card-content">
+        <div class="event-time">19:50</div>
+        <div>
+          <div class="event-title">El Alma de Córdoba</div>
+          <div class="event-sub">Punto de encuentro · Puerta Mezquita</div>
+        </div>
+      </div>
+    </div>
+    <div class="event-card" onclick="openPanel('torres')">
+      <img class="event-card-bg" src="img/torres-cabrera-patio.jpg" width="400" height="120" loading="lazy" onload="this.classList.add('loaded')" style="opacity:0;transition:opacity 0.5s;">
+      <div class="event-card-overlay" style="background:rgba(0,0,0,0.60);"></div>
+      <div class="event-card-content">
+        <div class="event-time">21:30</div>
+        <div>
+          <div class="event-title">Cena de Bienvenida</div>
+          <div class="event-sub">Palacio de Torres Cabrera · Choco</div>
+        </div>
+      </div>
+    </div>
+    <div class="event-card" onclick="openPanel('sojo')">
+      <img class="event-card-bg" src="img/sojo-bar.jpg" width="400" height="120" loading="lazy" onload="this.classList.add('loaded')" style="opacity:0;transition:opacity 0.5s;">
+      <div class="event-card-overlay" style="background:rgba(0,0,0,0.55);"></div>
+      <div class="event-card-content">
+        <div class="event-time">Tras cena</div>
+        <div>
+          <div class="event-title">Copas — Sojo Ribera</div>
+          <div class="event-sub">Paseo de la Ribera, 1 · Orillas del Guadalquivir</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SÁBADO -->
+  <div class="day-content" id="day-1">
+    <div class="event-card" onclick="openPanel('desayuno-sab')">
+      <img class="event-card-bg" src="img/hotel-fachada.jpg" width="400" height="120" loading="lazy" onload="this.classList.add('loaded')" style="opacity:0;transition:opacity 0.5s;">
+      <div class="event-card-overlay" style="background:rgba(0,0,0,0.55);"></div>
+      <div class="event-card-content">
+        <div class="event-time">Hasta 11:00</div>
+        <div>
+          <div class="event-title">Desayuno</div>
+          <div class="event-sub">H10 Palacio Colomera · Las Meninas</div>
+        </div>
+      </div>
+    </div>
+    <div class="event-card" onclick="openPanel('foursomes')">
+      <div class="event-card-content">
+        <div class="event-time">14:00–14:40</div>
+        <div>
+          <div class="event-title">Foursomes — Tee Times</div>
+          <div class="event-sub">Real Club de Campo de Córdoba · 9 hoyos</div>
+        </div>
+      </div>
+    </div>
+    <div class="event-card" onclick="openPanel('avit-sab')">
+      <div class="event-card-content">
+        <div class="event-time">Entre rondas</div>
+        <div>
+          <div class="event-title">Avituallamiento</div>
+          <div class="event-sub">Buggy en el campo · Entre Foursomes y Fourball</div>
+        </div>
+      </div>
+    </div>
+    <div class="event-card" onclick="openPanel('fourball')">
+      <div class="event-card-content">
+        <div class="event-time">A continuación</div>
+        <div>
+          <div class="event-title">Fourball — Mejor Bola</div>
+          <div class="event-sub">Real Club de Campo de Córdoba · 9 hoyos</div>
+        </div>
+      </div>
+    </div>
+    <div class="event-card" onclick="openPanel('debriefing')">
+      <div class="event-card-content">
+        <div class="event-time">20:30</div>
+        <div>
+          <div class="event-title">Debriefing + Anuncio Parejas + Betting</div>
+          <div class="event-sub">Hotel / Los Berengueles</div>
+        </div>
+      </div>
+    </div>
+    <div class="event-card" onclick="openPanel('berengueles')">
+      <img class="event-card-bg" src="img/los-berengueles.jpg" width="400" height="120" loading="lazy" onload="this.classList.add('loaded')" style="opacity:0;transition:opacity 0.5s;">
+      <div class="event-card-overlay" style="background:rgba(0,0,0,0.55);"></div>
+      <div class="event-card-content">
+        <div class="event-time">21:30</div>
+        <div>
+          <div class="event-title">Cena — Taberna Los Berengueles</div>
+          <div class="event-sub">C/ Conde de Torres Cabrera, 7</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DOMINGO -->
+  <div class="day-content" id="day-2">
+    <div class="event-card" onclick="openPanel('desayuno-dom')">
+      <img class="event-card-bg" src="img/hotel-fachada.jpg" width="400" height="120" loading="lazy" onload="this.classList.add('loaded')" style="opacity:0;transition:opacity 0.5s;">
+      <div class="event-card-overlay" style="background:rgba(0,0,0,0.55);"></div>
+      <div class="event-card-content">
+        <div class="event-time">Hasta 10:00</div>
+        <div>
+          <div class="event-title">Desayuno</div>
+          <div class="event-sub">H10 Palacio Colomera · Las Meninas ⚠️ antes de las 10h</div>
+        </div>
+      </div>
+    </div>
+    <div class="event-card" onclick="openPanel('singles')">
+      <div class="event-card-content">
+        <div class="event-time">11:00–11:40</div>
+        <div>
+          <div class="event-title">Singles Match Play</div>
+          <div class="event-sub">Real Club de Campo de Córdoba · 18 hoyos</div>
+        </div>
+      </div>
+    </div>
+    <div class="event-card" onclick="openPanel('avit-dom')">
+      <div class="event-card-content">
+        <div class="event-time">Durante el juego</div>
+        <div>
+          <div class="event-title">Avituallamiento + Comida del día</div>
+          <div class="event-sub">Buggy en el campo · No hay almuerzo en el club</div>
+        </div>
+      </div>
+    </div>
+    <div class="event-card" onclick="openPanel('trofeo')">
+      <img class="event-card-bg" src="img/casa-club-golf.jpg" width="400" height="120" loading="lazy" onload="this.classList.add('loaded')" style="opacity:0;transition:opacity 0.5s;">
+      <div class="event-card-overlay" style="background:rgba(0,0,0,0.45);"></div>
+      <div class="event-card-content">
+        <div class="event-time">17:00</div>
+        <div>
+          <div class="event-title">Entrega del Trofeo 🏆</div>
+          <div class="event-sub">Real Club de Campo de Córdoba</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ EQUIPOS ═══ -->
+<section id="sec-equipos" class="section">
+  <div class="team-bg">
+    <img class="team-bg-img" src="img/campo-fairway.jpg" width="800" height="300" loading="lazy" onload="this.classList.add('loaded')">
+    <div class="team-bg-overlay"></div>
+    <div style="position:relative;z-index:1;text-align:center;">
+      <div class="bebas" style="font-size:28px;color:var(--white);letter-spacing:3px;">XIV RYDER CUP CÓRDOBA</div>
+      <div style="font-size:12px;color:var(--gray);margin-top:4px;">Real Club de Campo · 3–4 Octubre 2025</div>
+    </div>
+  </div>
+
+  <div class="teams-grid">
+    <!-- LOBOS -->
+    <div class="team-col">
+      <div class="team-header">
+        <img src="img/logo-lobos.jpg" style="height:56px;width:auto;filter:invert(1);display:block;margin-bottom:8px;" alt="Lobos" loading="lazy">
+        <div class="team-name">LOBOS</div>
+        <div class="team-cap inter" style="font-size:11px;color:var(--gray);">Capitán: Fercho</div>
+        <div class="team-cap inter" style="font-size:10px;color:#555;">Defensores del Trofeo 🏆</div>
+      </div>
+      <div id="lobos-players"></div>
+    </div>
+    <div class="team-col-sep"></div>
+    <!-- LOCOS -->
+    <div class="team-col">
+      <div class="team-header">
+        <img src="img/logo-locos.jpg" style="height:56px;width:auto;background:#fff;padding:3px;border:1px solid var(--gold-dim);display:block;margin-bottom:8px;" alt="Locos" loading="lazy">
+        <div class="team-name">LOCOS</div>
+        <div class="team-cap inter" style="font-size:11px;color:var(--gray);">Capitán: Merello</div>
+        <div class="team-cap inter" style="font-size:10px;color:#555;">&nbsp;</div>
+      </div>
+      <div id="locos-players"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ INFO ═══ -->
+<section id="sec-info" class="section">
+  <div class="sec-title">INFO</div>
+
+  <!-- Hotel -->
+  <div class="info-card" style="padding:0;overflow:hidden;">
+    <div style="position:relative;height:130px;overflow:hidden;">
+      <img src="img/hotel-fachada.jpg" style="width:100%;height:100%;object-fit:cover;display:block;" loading="lazy" alt="H10 Palacio Colomera">
+      <div style="position:absolute;inset:0;background:rgba(0,0,0,0.50);"></div>
+      <div style="position:absolute;bottom:12px;left:16px;">
+        <h3 style="color:#fff;font-family:'Playfair Display',serif;font-size:16px;font-weight:700;margin:0;">🏨 Hotel</h3>
+        <div style="font-size:11px;color:rgba(255,255,255,0.75);margin-top:2px;">H10 Palacio Colomera · Plaza de las Tendillas</div>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:2px;margin-bottom:2px;">
+      <img src="img/hotel-lobby.jpg" style="width:100%;height:80px;object-fit:cover;display:block;" loading="lazy" alt="Lobby">
+      <img src="img/hotel-piscina.jpg" style="width:100%;height:80px;object-fit:cover;display:block;" loading="lazy" alt="Piscina">
+    </div>
+    <div style="padding:14px 16px 16px;">
+    <div class="info-row"><span class="info-label">Hotel</span><span>H10 Palacio Colomera ⭐⭐⭐⭐</span></div>
+    <div class="info-row"><span class="info-label">Dirección</span><span>Plaza de las Tendillas, 3, Córdoba</span></div>
+    <div class="info-row"><span class="info-label">Tel.</span><a href="tel:+34957216800" class="tel-link">+34 957 216 800</a></div>
+    <div class="info-row"><span class="info-label">Desayuno</span><span>07:00–11:00h</span></div>
+    <div class="warn">⚠️ Sáb.: antes de las 11:00 · Dom.: antes de las 10:00 (salida al campo)</div>
+    <a href="https://www.google.com/maps/search/Plaza+de+las+Tendillas,+3,+14002,+Córdoba" target="_blank" class="maps-link">🗺 Ver en Google Maps</a>
+    </div>
+  </div>
+
+  <!-- Campo -->
+  <div class="info-card" style="padding:0;overflow:hidden;">
+    <div style="position:relative;height:130px;overflow:hidden;">
+      <img src="img/campo-hero.jpg" style="width:100%;height:100%;object-fit:cover;display:block;" loading="lazy" alt="Real Club de Campo de Córdoba">
+      <div style="position:absolute;inset:0;background:rgba(0,0,0,0.50);"></div>
+      <div style="position:absolute;bottom:12px;left:16px;">
+        <h3 style="color:#fff;font-family:'Playfair Display',serif;font-size:16px;font-weight:700;margin:0;">⛳ Campo de Golf</h3>
+        <div style="font-size:11px;color:rgba(255,255,255,0.7);margin-top:2px;">Real Club de Campo de Córdoba · Sierra Morena</div>
+      </div>
+    </div>
+    <div style="padding:16px;">
+    <div class="info-row"><span class="info-label">Club</span><span>Real Club de Campo de Córdoba</span></div>
+    <div class="info-row"><span class="info-label">Dirección</span><span>Ctra. Antigua Córdoba-Obejo, km 9,2</span></div>
+    <div class="info-row"><span class="info-label">Tel.</span><a href="tel:957350208" class="tel-link">957 350 208</a></div>
+    <div class="info-row"><span class="info-label">Email</span><a href="mailto:caddymaster@golfcordoba.com" class="info-link" style="font-size:11px;">caddymaster@golfcordoba.com</a></div>
+    <div class="info-row"><span class="info-label">Ruta</span><span>Tomar salida Córdoba Norte – Badajoz</span></div>
+    <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:4px;">
+      <a href="https://maps.app.goo.gl/3Cqi3xcAGehKw9wG7" target="_blank" class="maps-link">🗺 Google Maps</a>
+      <a href="https://golfcordoba.com" target="_blank" class="maps-link">🌐 Web del club</a>
+    </div>
+    </div>
+  </div>
+
+  <!-- Llegar -->
+  <div class="info-card">
+    <h3>🚗 Cómo Llegar</h3>
+    <div class="info-row"><span class="info-label">En coche</span><span>A-4 desde Madrid, ~3h 30min</span></div>
+    <div class="info-row"><span class="info-label">En AVE</span><span>Atocha → Córdoba Central, ~1h 45min</span></div>
+    <div class="info-row"><span class="info-label">Hotel→Campo</span><span>Coche particular, ~20 min</span></div>
+  </div>
+
+  <!-- Parking -->
+  <div class="info-card">
+    <h3>🅿️ Parking en Córdoba</h3>
+    <div class="warn" style="margin-bottom:10px;">⚠️ El hotel no tiene parking. Ir primero al parking y luego al hotel a pie.</div>
+    <div class="parking-row">
+      <strong>Parking Calle Sevilla</strong> · 2 min a pie · ~20€/día<br>
+      <a href="tel:957491875" class="tel-link">957 491 875</a> · <a href="https://goo.gl/maps/gqBjsDtKoopAmrz36" target="_blank" class="info-link">📍 Maps</a>
+    </div>
+    <div class="parking-row">
+      <strong>Parking La Victoria (PARKIA)</strong> · 7 min a pie · ~15€/día<br>
+      <a href="tel:957296345" class="tel-link">957 296 345</a> · <a href="https://goo.gl/maps/3q1kVv6RiGMgTvtZ6" target="_blank" class="info-link">📍 Maps</a>
+    </div>
+    <div class="parking-row" style="border:none;">
+      <strong>Parking Córdoba Centro</strong> · 5 min a pie · ~14€/día<br>
+      <a href="tel:957478783" class="tel-link">957 478 783</a> · <a href="https://goo.gl/maps/w97PV7VqcQ5YtopXA" target="_blank" class="info-link">📍 Maps</a>
+    </div>
+    <div style="font-size:11px;color:var(--gold);margin-top:8px;">💡 Reservar con antelación llamando directamente</div>
+  </div>
+
+  <!-- Guarda-palos -->
+  <div class="info-card">
+    <h3>🧳 Guarda-Palos</h3>
+    <div style="font-size:14px;color:#ccc;">✅ El club guarda los palos durante todo el fin de semana <strong style="color:var(--gold)">(confirmado)</strong></div>
+    <div style="font-size:12px;color:var(--gray);margin-top:6px;">Consultas: <a href="mailto:caddymaster@golfcordoba.com" class="info-link">caddymaster@golfcordoba.com</a></div>
+  </div>
+
+  <!-- Contactos -->
+  <div class="info-card">
+    <h3>📞 Contactos Clave</h3>
+    <div class="info-row" style="justify-content:space-between;"><span>Alberto (organización)</span><a href="tel:681637862" class="tel-link">681 637 862</a></div>
+    <div class="info-row" style="justify-content:space-between;"><span>Capitán Lobos — Fercho</span><span class="gray">—</span></div>
+    <div class="info-row" style="justify-content:space-between;"><span>Capitán Locos — Merello</span><span class="gray">—</span></div>
+    <div class="info-row" style="justify-content:space-between;"><span>Hotel H10 Colomera</span><a href="tel:+34957216800" class="tel-link">957 216 800</a></div>
+    <div class="info-row" style="justify-content:space-between;"><span>Real Club Golf (Caddy)</span><a href="tel:957350208" class="tel-link">957 350 208</a></div>
+  </div>
+</section>
+
+<!-- ═══ YO ═══ -->
+<section id="sec-yo" class="section">
+  <div class="sec-title">MIS PREFERENCIAS</div>
+
+  <div class="name-select-wrap">
+    <label style="font-size:12px;color:var(--gray);display:block;margin-bottom:6px;">Selecciona tu nombre</label>
+    <select class="name-select" id="yo-name" onchange="onNameChange()">
+      <option value="">— Elige tu nombre —</option>
+      <optgroup label="LOBOS">
+        <option value="Diego">Diego (Diego Fernandez Ortiz)</option>
+        <option value="Fercho">Fercho (Fernando Suárez de Tangil)</option>
+        <option value="Gupi">Gupi (Ignacio Gurpegui)</option>
+        <option value="Herrero">Herrero (José Luis Herrero)</option>
+        <option value="Jaki">Jaki (Jacobo Dominguez)</option>
+        <option value="Jido">Jido (Jorge Edwards)</option>
+        <option value="Juan">Juan (Juan Suárez de Lezo)</option>
+        <option value="Nacho">Nacho (Ignacio Santos)</option>
+        <option value="Otegui">Otegui (Otto Otegui)</option>
+        <option value="Pedro">Pedro (Pedro Goizueta)</option>
+      </optgroup>
+      <optgroup label="LOCOS">
+        <option value="Agus">Agus (Agustín De Miguel)</option>
+        <option value="Alon">Alon (Jose Maria Alonso)</option>
+        <option value="Béjar">Béjar (Juan Béjar)</option>
+        <option value="Blasfi">Blasfi (Álvaro de Blas)</option>
+        <option value="Castejas">Castejas (Iñigo Glez de Castejon)</option>
+        <option value="Dore">Dore (Borja de Luis)</option>
+        <option value="Juanma">Juanma (Juan Melgarejo)</option>
+        <option value="Merello">Merello (Carlos Merello)</option>
+        <option value="Nico">Nico (Álvaro De Nicolás)</option>
+        <option value="Prieto">Prieto (Álvaro Prieto)</option>
+      </optgroup>
+    </select>
+  </div>
+
+  <div id="yo-form" style="display:none;">
+    <div class="progress-txt" id="yo-progress">0 de 6 preferencias completadas</div>
+    <div class="progress-bar-wrap" style="margin:0 16px 16px;"><div class="progress-bar" id="yo-bar" style="width:0%"></div></div>
+
+    <!-- P1: Green fee -->
+    <div class="yo-card">
+      <h3>1. Green Fee previo a la competición</h3>
+      <p style="font-size:12px;color:var(--gray);margin-bottom:8px;">¿Jugarás una ronda antes del viernes?</p>
+      <div class="radio-opt">
+        <input type="radio" name="greenfee" id="gf0" value="No jugaré antes de la competición" onchange="savePrefs()">
+        <label for="gf0">No jugaré antes de la competición</label>
+      </div>
+      <div class="radio-opt">
+        <input type="radio" name="greenfee" id="gf1" value="jueves" onchange="savePrefs();toggleGFTime('jueves')">
+        <label for="gf1">Jueves 1 de octubre</label>
+      </div>
+      <div id="gf-time-jueves" style="display:none;padding-left:28px;">
+        <select class="sub-select" id="gf-time-j" onchange="savePrefs()">
+          <option value="">Hora preferida</option>
+          <option>08:00</option><option>09:00</option><option>10:00</option>
+          <option>11:00</option><option>12:00</option><option>13:00</option>
+          <option>14:00</option><option>15:00</option><option>16:00</option><option>17:00</option>
+        </select>
+      </div>
+      <div class="radio-opt">
+        <input type="radio" name="greenfee" id="gf2" value="viernes" onchange="savePrefs();toggleGFTime('viernes')">
+        <label for="gf2">Viernes 2 de octubre</label>
+      </div>
+      <div id="gf-time-viernes" style="display:none;padding-left:28px;">
+        <select class="sub-select" id="gf-time-v" onchange="savePrefs()">
+          <option value="">Hora preferida</option>
+          <option>08:00</option><option>09:00</option><option>10:00</option>
+          <option>11:00</option><option>12:00</option><option>13:00</option>
+        </select>
+      </div>
+      <div class="q-note">📌 Llama tú directamente al club el lunes 28 de septiembre a primera hora para reservar tu tee time · Tel: <a href="tel:957350208" style="color:var(--gold)">957 350 208</a></div>
+    </div>
+
+    <!-- P2: Mezquita -->
+    <div class="yo-card">
+      <h3>2. Visita Nocturna Mezquita — viernes 20:00h</h3>
+      <p style="font-size:12px;color:var(--gray);margin-bottom:8px;">¿Asistirás a "El Alma de Córdoba"?</p>
+      <div class="radio-opt">
+        <input type="radio" name="mezquita" id="mez1" value="Sí · 19:50h en la puerta" onchange="savePrefs()">
+        <label for="mez1">Sí, estaré en la puerta a las 19:50h</label>
+      </div>
+      <div class="radio-opt">
+        <input type="radio" name="mezquita" id="mez0" value="No asistiré" onchange="savePrefs()">
+        <label for="mez0">No asistiré</label>
+      </div>
+    </div>
+
+    <!-- P3: Bebidas -->
+    <div class="yo-card">
+      <h3>3. Bebidas Cena Viernes — Torres Cabrera</h3>
+      <p style="font-size:12px;color:var(--gray);margin-bottom:8px;">¿Qué beberás? (puedes marcar varias)</p>
+      <div class="check-grid">
+        <div class="check-opt"><input type="checkbox" id="beb-champan" value="Champán" onchange="savePrefs()"><label for="beb-champan">Champán</label></div>
+        <div class="check-opt"><input type="checkbox" id="beb-cerveza" value="Cerveza" onchange="savePrefs()"><label for="beb-cerveza">Cerveza</label></div>
+        <div class="check-opt"><input type="checkbox" id="beb-tinto" value="Vino Tinto" onchange="savePrefs()"><label for="beb-tinto">Vino Tinto</label></div>
+        <div class="check-opt"><input type="checkbox" id="beb-blanco" value="Vino Blanco" onchange="savePrefs()"><label for="beb-blanco">Vino Blanco</label></div>
+        <div class="check-opt"><input type="checkbox" id="beb-montilla" value="Vertical Montilla-Moriles" onchange="savePrefs()"><label for="beb-montilla">Montilla-Moriles</label></div>
+        <div class="check-opt"><input type="checkbox" id="beb-whisky" value="Güisqui" onchange="savePrefs()"><label for="beb-whisky">Güisqui</label></div>
+        <div class="check-opt"><input type="checkbox" id="beb-ron" value="Ron" onchange="savePrefs()"><label for="beb-ron">Ron</label></div>
+        <div class="check-opt"><input type="checkbox" id="beb-vodka" value="Vodka" onchange="savePrefs()"><label for="beb-vodka">Vodka</label></div>
+        <div class="check-opt"><input type="checkbox" id="beb-gin" value="Gin" onchange="savePrefs()"><label for="beb-gin">Gin</label></div>
+      </div>
+    </div>
+
+    <!-- P4: Avit Sábado -->
+    <div class="yo-card">
+      <h3>4. Avituallamiento Sábado</h3>
+      <p style="font-size:12px;color:var(--gray);margin-bottom:8px;">¿Quieres snack entre rondas? (bocadillo, chocolatina, refresco, fruta)</p>
+      <div class="radio-opt">
+        <input type="radio" name="avit-sab" id="as1" value="Sí" onchange="savePrefs()">
+        <label for="as1">Sí, quiero avituallamiento</label>
+      </div>
+      <div class="radio-opt">
+        <input type="radio" name="avit-sab" id="as0" value="No" onchange="savePrefs()">
+        <label for="as0">No, gracias</label>
+      </div>
+    </div>
+
+    <!-- P5: Avit Domingo -->
+    <div class="yo-card">
+      <h3>5. Avituallamiento Domingo</h3>
+      <p style="font-size:12px;color:var(--gray);margin-bottom:8px;">¿Quieres snack durante el partido?</p>
+      <div class="q-note" style="margin-bottom:10px;">⚠️ Es la comida del día — no hay almuerzo en el club</div>
+      <div class="radio-opt">
+        <input type="radio" name="avit-dom" id="ad1" value="Sí" onchange="savePrefs()">
+        <label for="ad1">Sí, quiero avituallamiento</label>
+      </div>
+      <div class="radio-opt">
+        <input type="radio" name="avit-dom" id="ad0" value="No" onchange="savePrefs()">
+        <label for="ad0">No, gracias</label>
+      </div>
+    </div>
+
+    <!-- P6: Menú -->
+    <div class="yo-card">
+      <h3>6. Menú Cena Sábado — Los Berengueles</h3>
+      <div class="radio-opt">
+        <input type="radio" name="menu" id="m1" value="Carne" onchange="savePrefs()">
+        <label for="m1">Carne</label>
+      </div>
+      <div class="radio-opt">
+        <input type="radio" name="menu" id="m2" value="Pescado" onchange="savePrefs()">
+        <label for="m2">Pescado</label>
+      </div>
+      <div class="radio-opt">
+        <input type="radio" name="menu" id="m3" value="Vegetariano" onchange="savePrefs()">
+        <label for="m3">Vegetariano</label>
+      </div>
+    </div>
+
+    <a class="wa-btn disabled" id="wa-btn" href="#" target="_blank" onclick="return handleWA(event)">
+      Enviar por WhatsApp
+    </a>
+    <div style="height:8px;"></div>
+  </div>
+</section>
+
+</main>
+
+<!-- ═══ BOTTOM NAV ═══ -->
+<nav id="nav">
+  <button class="nav-tab active" onclick="showSection('inicio',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 9.5L12 3l9 6.5V21a1 1 0 01-1 1H4a1 1 0 01-1-1V9.5z"/><path d="M9 22V12h6v10"/></svg>
+    <span class="nav-label">Inicio</span>
+  </button>
+  <button class="nav-tab" onclick="showSection('agenda',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="4" width="18" height="18" rx="0"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="16" y1="2" x2="16" y2="6"/></svg>
+    <span class="nav-label">Agenda</span>
+  </button>
+  <button class="nav-tab" onclick="showSection('equipos',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="9" cy="7" r="3"/><circle cx="15" cy="7" r="3"/><path d="M3 21c0-4 2.7-7 6-7h6c3.3 0 6 3 6 7"/></svg>
+    <span class="nav-label">Equipos</span>
+  </button>
+  <button class="nav-tab" onclick="showSection('info',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16" stroke-width="2"/></svg>
+    <span class="nav-label">Info</span>
+  </button>
+  <button class="nav-tab" onclick="showSection('yo',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+    <span class="nav-label">Yo</span>
+  </button>
+</nav>
+
+<!-- ═══ PANEL SLIDE-UP ═══ -->
+<div id="panel-overlay" onclick="closePanel()"></div>
+<div id="panel">
+  <div id="panel-header">
+    <div>
+      <div class="panel-time" id="panel-time"></div>
+      <div class="panel-title" id="panel-title"></div>
+    </div>
+    <button id="panel-close" onclick="closePanel()">✕</button>
+  </div>
+  <div id="panel-body"></div>
+</div>
+
+<!-- ═══ PIN OVERLAY ═══ -->
+<div id="pin-overlay">
+  <div class="bebas" style="font-size:28px;color:var(--gold);letter-spacing:3px;">ACCESO ADMIN</div>
+  <input type="password" id="pin-input" maxlength="4" placeholder="0000" inputmode="numeric" pattern="[0-9]*" onkeydown="if(event.key==='Enter')checkPin()">
+  <div id="pin-err"></div>
+  <button onclick="checkPin()" style="background:var(--gold);color:#000;font-family:'Bebas Neue',cursive;font-size:22px;letter-spacing:2px;padding:12px 40px;border:none;cursor:pointer;">ENTRAR</button>
+  <button onclick="closePin()" style="background:none;color:var(--gray);font-size:14px;border:none;cursor:pointer;padding:8px;">Cancelar</button>
+</div>
+
+<!-- ═══ ADMIN OVERLAY ═══ -->
+<div id="admin-overlay">
+  <div class="admin-header">
+    <div class="bebas" style="font-size:26px;color:var(--gold);letter-spacing:3px;">PANEL ADMIN</div>
+    <button onclick="closeAdmin()" style="background:var(--gold);color:#000;font-family:'Bebas Neue',cursive;font-size:16px;letter-spacing:1px;padding:8px 16px;border:none;cursor:pointer;">CERRAR</button>
+  </div>
+
+  <!-- Emparejamientos Sábado -->
+  <div class="admin-section">
+    <h3>EMPAREJAMIENTOS SÁBADO (Foursomes &amp; Fourball)</h3>
+    <p style="font-size:11px;color:var(--gray);margin-bottom:12px;">Selecciona 2 Locos y 2 Lobos por pareja. Las mismas parejas juegan Foursomes y Fourball.</p>
+    <div id="pairings-sab"></div>
+  </div>
+
+  <!-- Emparejamientos Domingo Singles -->
+  <div class="admin-section">
+    <h3>EMPAREJAMIENTOS DOMINGO (Singles)</h3>
+    <div id="pairings-dom"></div>
+  </div>
+
+  <!-- Resultados Foursomes -->
+  <div class="admin-section">
+    <h3>RESULTADOS — FOURSOMES</h3>
+    <div id="results-fs"></div>
+  </div>
+
+  <!-- Resultados Fourball -->
+  <div class="admin-section">
+    <h3>RESULTADOS — FOURBALL</h3>
+    <div id="results-fb"></div>
+  </div>
+
+  <!-- Resultados Singles -->
+  <div class="admin-section">
+    <h3>RESULTADOS — SINGLES</h3>
+    <div id="results-sg"></div>
+  </div>
+
+  <!-- Botones -->
+  <div class="admin-section">
+    <button class="admin-btn admin-btn-gold" onclick="saveAdmin()">💾 GUARDAR Y CERRAR</button>
+    <button class="admin-btn admin-btn-red" onclick="resetEdition()" style="margin-top:8px;">⚠️ RESETEAR XIV EDICIÓN</button>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════
+// DATA
+// ═══════════════════════════════════════
+const LOBOS = [
+  {apodo:'Fercho', nombre:'Fernando Suárez de Tangil', hcpE:16.1, hcpJ:19, ed:12, pct:41.7, cap:true},
+  {apodo:'Diego', nombre:'Diego Fernandez Ortiz', hcpE:23.7, hcpJ:28, ed:12, pct:47.9},
+  {apodo:'Gupi', nombre:'Ignacio Gurpegui Aparicio', hcpE:26.9, hcpJ:32, ed:5, pct:62.5},
+  {apodo:'Herrero', nombre:'José Luis Herrero', hcpE:15.7, hcpJ:19, ed:5, pct:67.5},
+  {apodo:'Jaki', nombre:'Jacobo Dominguez Vega-Penichet', hcpE:11.4, hcpJ:14, ed:13, pct:56.7},
+  {apodo:'Jido', nombre:'Jorge Edwards Bernar', hcpE:11.5, hcpJ:14, ed:13, pct:54.8},
+  {apodo:'Juan', nombre:'Juan Suárez de Lezo Ferrer', hcpE:9.0, hcpJ:11, ed:13, pct:63.5},
+  {apodo:'Nacho', nombre:'Ignacio Santos Gallego', hcpE:21.7, hcpJ:26, ed:11, pct:22.7},
+  {apodo:'Otegui', nombre:'Otto Otegui', hcpE:12.2, hcpJ:15, ed:0, pct:null},
+  {apodo:'Pedro', nombre:'Pedro Goizueta Hernandez', hcpE:9.4, hcpJ:12, ed:12, pct:49.0},
+];
+const LOCOS = [
+  {apodo:'Merello', nombre:'Carlos Merello', hcpE:36.0, hcpJ:43, cap:true},
+  {apodo:'Agus', nombre:'Agustín De Miguel Querejeta', hcpE:23.6, hcpJ:28},
+  {apodo:'Alon', nombre:'Jose Maria Alonso Monforte', hcpE:12.1, hcpJ:15},
+  {apodo:'Béjar', nombre:'Juan Béjar Frías', hcpE:14.6, hcpJ:18},
+  {apodo:'Blasfi', nombre:'Álvaro de Blas Albert', hcpE:8.7, hcpJ:11},
+  {apodo:'Castejas', nombre:'Iñigo Glez de Castejon', hcpE:16.4, hcpJ:20},
+  {apodo:'Dore', nombre:'Borja de Luis de Blas', hcpE:9.1, hcpJ:11},
+  {apodo:'Juanma', nombre:'Juan Melgarejo Molina', hcpE:18.8, hcpJ:23},
+  {apodo:'Nico', nombre:'Álvaro De Nicolás González', hcpE:6.8, hcpJ:9},
+  {apodo:'Prieto', nombre:'Álvaro Prieto Riera', hcpE:11.4, hcpJ:14},
+];
+
+// Panel content definitions
+const PANELS = {
+  mezquita: {
+    time: '19:50 — 21:00',
+    title: 'El Alma de Córdoba',
+    body: `
+      <img src="img/mezquita-noche.jpg" style="width:100%;height:180px;object-fit:cover;display:block;margin-bottom:16px;" loading="lazy" alt="Mezquita de Córdoba">
+      <div class="panel-section">
+        <h4>Dirección</h4>
+        <p>Calle Torrijos, 10 — Mezquita-Catedral de Córdoba</p>
+        <a href="https://www.google.com/maps/search/Mezquita+Catedral+Córdoba" target="_blank" class="maps-link">🗺 Google Maps</a>
+      </div>
+      <div class="panel-section">
+        <h4>Descripción</h4>
+        <p>Experiencia nocturna única que combina luz, sonido e imagen para redescubrir el monumento. Comienza en el Patio de los Naranjos con proyección audiovisual sobre la historia del edificio, continúa por el interior del conjunto monumental.</p>
+      </div>
+      <div class="panel-section">
+        <h4>Importante</h4>
+        <p>⏰ Punto de encuentro a las <strong style="color:var(--gold)">19:50h</strong> en la puerta. Puntualidad importante — máx. 80 personas por sesión. Duración ~1 hora.</p>
+      </div>
+      <div class="panel-section">
+        <a href="https://mezquita-catedraldecordoba.es" target="_blank" class="maps-link">🌐 Web oficial</a>
+      </div>`
+  },
+  torres: {
+    time: '21:30',
+    title: 'Cena de Bienvenida — Palacio de Torres Cabrera',
+    body: `
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-bottom:16px;">
+        <img src="img/torres-cabrera-salon.webp" style="width:100%;height:140px;object-fit:cover;display:block;" loading="lazy" alt="Patio Torres Cabrera">
+        <img src="img/comedor-torres-cabrera.jpg" style="width:100%;height:140px;object-fit:cover;display:block;" loading="lazy" alt="Comedor Torres Cabrera">
+      </div>
+      <div class="panel-section">
+        <h4>Dirección</h4>
+        <p>Calle Conde de Torres Cabrera, 19, Córdoba</p>
+        <a href="https://www.google.com/maps/search/Calle+Conde+de+Torres+Cabrera+19+Córdoba" target="_blank" class="maps-link">🗺 Google Maps</a>
+      </div>
+      <div class="panel-section">
+        <h4>El Espacio</h4>
+        <p>Palacio nobiliario del siglo XVII. Casi 2.500 m² de lujo e historia: jardines, patio con mosaicos romanos del siglo II d.C., escalera de mármol negro y el célebre Salón del Trono construido en 1877 para la visita de Alfonso XII. Por sus salones han pasado Alfonso XII, Alfonso XIII, los reyes de Jordania e ilustres Lobos.</p>
+      </div>
+      <div class="panel-section">
+        <h4>Menú Cóctel — Restaurante Choco</h4>
+        <p style="color:var(--gold);font-size:12px;margin-bottom:6px;">PASES FRÍOS</p>
+        <div class="menu-item">· Regaña de sardinas con pan hojaldrado</div>
+        <div class="menu-item">· Tosta de atún de almadraba</div>
+        <div class="menu-item">· Piriñaca de pulpo y dijonesa montada</div>
+        <div class="menu-item">· Ensaladilla tradicional machacada a mortero</div>
+        <div class="menu-item">· Vieira aliñada sobre gazpacho de cebolleta y huevas de trucha</div>
+        <p style="color:var(--gold);font-size:12px;margin:10px 0 6px;">PASES CALIENTES</p>
+        <div class="menu-item">· Nuestras patatas bravas de autor</div>
+        <div class="menu-item">· Pollo thai crujiente</div>
+        <div class="menu-item">· Mollete de Almodóvar ibérico</div>
+        <div class="menu-item">· Cazuelita de guiso de rabo de toro con parmentier de patata</div>
+        <p style="color:var(--gold);font-size:12px;margin:10px 0 6px;">BROCHE FINAL</p>
+        <div class="menu-item">· Mini torrijas caramelizadas con crème brûlée</div>
+      </div>
+      <div class="note-gold">Indica tu preferencia de bebida en la sección "Yo"</div>`
+  },
+  sojo: {
+    time: 'Tras la cena',
+    title: 'Copas — Sojo Ribera',
+    body: `
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-bottom:16px;">
+        <img src="img/sojo-bar.jpg" style="width:100%;height:140px;object-fit:cover;display:block;" loading="lazy" alt="Sojo bar">
+        <img src="img/sojo-vistas.jpg" style="width:100%;height:140px;object-fit:cover;display:block;" loading="lazy" alt="Vistas Guadalquivir">
+      </div>
+      <div class="panel-section">
+        <h4>Dirección</h4>
+        <p>Paseo de la Ribera, 1, 14002 Córdoba · ~12 min a pie desde Torres Cabrera</p>
+        <a href="https://maps.app.goo.gl/TTTUxRYVANHJKsdSA" target="_blank" class="maps-link">🗺 Google Maps</a>
+      </div>
+      <div class="panel-section">
+        <h4>Descripción</h4>
+        <p>Bar de coctelería y ocio nocturno a orillas del Guadalquivir, con terraza mirador con vistas al Puente Romano y la Torre de la Calahorra. Ambiente inspirado en las noches de al-Ándalus. Música en directo, DJs y los mejores cócteles de Córdoba.</p>
+      </div>
+      <div class="panel-section">
+        <a href="https://www.sojoribera.com" target="_blank" class="maps-link">🌐 Web</a>
+      </div>`
+  },
+  'desayuno-sab': {
+    time: 'Hasta 11:00',
+    title: 'Desayuno — H10 Palacio Colomera',
+    body: `
+      <div class="panel-section">
+        <p>Restaurante Las Meninas · H10 Palacio Colomera</p>
+        <p style="margin-top:8px;">Plaza de las Tendillas, 3, Córdoba</p>
+      </div>
+      <div class="note-gold">⚠️ Sábado: desayunar antes de las 11:00h. Salida al campo antes de las 13:00h.</div>`
+  },
+  foursomes: {
+    time: '14:00 — 14:40',
+    title: 'Foursomes (Greensomes) · 9 hoyos',
+    body: `
+      <div class="panel-section">
+        <h4>Campo</h4>
+        <p>Real Club de Campo de Córdoba · Ctra. Antigua Córdoba-Obejo, km 9,2</p>
+        <a href="https://maps.app.goo.gl/3Cqi3xcAGehKw9wG7" target="_blank" class="maps-link">🗺 Google Maps</a>
+      </div>
+      <div class="panel-section">
+        <h4>Formato</h4>
+        <p>5 partidos · Salidas cada 10 min de 14:00 a 14:40 · <strong style="color:var(--gold)">0,5 pts por partido ganado</strong></p>
+      </div>
+      <div class="panel-section">
+        <h4>Descripción</h4>
+        <p>Greensomes: ambos jugadores dan el drive, la pareja elige el mejor y a partir de ahí juegan alternos. Campo entre bosques de pinos, alcornoques y encinas en Sierra Morena. Calles estrechas con dog legs, búnkeres y lago central.</p>
+      </div>`
+  },
+  'avit-sab': {
+    time: 'Entre rondas',
+    title: 'Avituallamiento Sábado',
+    body: `
+      <div class="panel-section">
+        <p>Buggy de avituallamiento en el campo entre la ronda de Foursomes y la de Fourball.</p>
+        <p style="margin-top:8px;">Contenido: bocadillos, snacks, refrescos, fruta · Gestión: Alberto</p>
+      </div>
+      <div class="note-gold">Indica si quieres avituallamiento en la sección "Yo"</div>`
+  },
+  fourball: {
+    time: 'A continuación',
+    title: 'Fourball (Mejor Bola) · 9 hoyos',
+    body: `
+      <div class="panel-section">
+        <h4>Formato</h4>
+        <p>Mismas parejas que en Foursomes · 5 partidos · <strong style="color:var(--gold)">0,5 pts por partido ganado</strong></p>
+      </div>
+      <div class="panel-section">
+        <h4>Descripción</h4>
+        <p>Mejor Bola: cada jugador juega su propia bola, cuenta el mejor resultado de la pareja en cada hoyo.</p>
+      </div>`
+  },
+  debriefing: {
+    time: '20:30',
+    title: 'Debriefing + Anuncio Parejas + Betting',
+    body: `
+      <div class="panel-section">
+        <p>Hotel H10 Palacio Colomera o Taberna Los Berengueles (por confirmar)</p>
+      </div>
+      <div class="panel-section">
+        <h4>Contenido</h4>
+        <ul>
+          <li>Repaso de resultados del día</li>
+          <li>📣 Anuncio oficial de parejas para el Match Play del domingo</li>
+          <li>💰 Betting (apuestas para singles y resultado final)</li>
+        </ul>
+      </div>`
+  },
+  berengueles: {
+    time: '21:30',
+    title: 'Cena — Taberna Los Berengueles',
+    body: `
+      <div class="panel-section">
+        <h4>Dirección</h4>
+        <p>Calle Conde de Torres Cabrera, 7, 14001 Córdoba</p>
+        <a href="https://www.google.com/maps/search/Taberna+Los+Berengueles+Córdoba" target="_blank" class="maps-link">🗺 Google Maps</a>
+      </div>
+      <div class="panel-section">
+        <h4>Tipo</h4>
+        <p>Cocina cordobesa tradicional · Menú: carne / pescado / vegetariana</p>
+      </div>
+      <div class="note-gold">Indica tu preferencia de menú en la sección "Yo"</div>`
+  },
+  'desayuno-dom': {
+    time: 'Hasta 10:00',
+    title: 'Desayuno — H10 Palacio Colomera',
+    body: `
+      <div class="panel-section">
+        <p>Restaurante Las Meninas · Plaza de las Tendillas, 3, Córdoba</p>
+      </div>
+      <div class="note-gold">⚠️ Domingo: desayunar antes de las 10:00h. Salida al campo a las 10:00h en punto.</div>`
+  },
+  singles: {
+    time: '11:00 — 11:40',
+    title: 'Singles Match Play · 18 hoyos',
+    body: `
+      <div class="panel-section">
+        <h4>Campo</h4>
+        <p>Real Club de Campo de Córdoba · Ctra. Antigua Córdoba-Obejo, km 9,2</p>
+        <a href="https://maps.app.goo.gl/3Cqi3xcAGehKw9wG7" target="_blank" class="maps-link">🗺 Google Maps</a>
+      </div>
+      <div class="panel-section">
+        <h4>Formato</h4>
+        <p>10 partidos individuales · Salidas cada 10 min de 11:00 a 11:40 · <strong style="color:var(--gold)">1 pt por partido ganado · 0,5 pts empate</strong></p>
+      </div>
+      <div class="panel-section">
+        <h4>Puntos para ganar la XIV Edición</h4>
+        <p>Más de <strong style="color:var(--gold)">7,5 pts</strong> en total. Para retener (Lobos): empate 7,5–7,5 es suficiente.</p>
+      </div>`
+  },
+  'avit-dom': {
+    time: 'Durante el juego',
+    title: 'Avituallamiento + Comida del día',
+    body: `
+      <div class="panel-section">
+        <p>Buggy de avituallamiento en el campo durante el partido · Gestión: Alberto</p>
+      </div>
+      <div class="note-gold">⚠️ Es la comida del día. No hay almuerzo en el club. Indica si quieres avituallamiento en la sección "Yo".</div>`
+  },
+  trofeo: {
+    time: '17:00',
+    title: 'Entrega del Trofeo',
+    body: `
+      <div class="panel-section">
+        <p>Real Club de Campo de Córdoba</p>
+        <a href="https://maps.app.goo.gl/3Cqi3xcAGehKw9wG7" target="_blank" class="maps-link">🗺 Google Maps</a>
+      </div>
+      <div class="panel-section">
+        <p>Ceremonia de entrega del Trofeo XIV Ryder Cup Córdoba al equipo ganador de la edición.</p>
+        <p style="margin-top:8px;color:var(--gray);">Para retener: Lobos necesitan al menos 7,5 puntos. Para ganar: más de 7,5.</p>
+      </div>`
+  }
+};
+
+// ═══════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════
+let tapCount = 0, tapTimer = null;
+let state = {
+  pairings_sab: Array(5).fill(null).map(()=>({locos:['',''], lobos:['','']})),
+  pairings_dom: Array(10).fill(null).map(()=>({loco:'', lobo:''})),
+  results_fs: Array(5).fill(''),
+  results_fb: Array(5).fill(''),
+  results_sg: Array(10).fill(''),
+};
+
+function loadState() {
+  try {
+    const s = localStorage.getItem('rcp14_state');
+    if (s) state = Object.assign(state, JSON.parse(s));
+  } catch(e){}
+}
+function saveState() {
+  try { localStorage.setItem('rcp14_state', JSON.stringify(state)); } catch(e){}
+}
+
+// ═══════════════════════════════════════
+// NAV
+// ═══════════════════════════════════════
+function showSection(id, btn) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('sec-' + id).classList.add('active');
+  btn.classList.add('active');
+  window.scrollTo(0,0);
+}
+
+// ═══════════════════════════════════════
+// AGENDA
+// ═══════════════════════════════════════
+function showDay(idx, btn) {
+  document.querySelectorAll('.day-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.day-content').forEach(d => d.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('day-' + idx).classList.add('active');
+}
+
+function openPanel(id) {
+  const p = PANELS[id]; if (!p) return;
+  document.getElementById('panel-time').textContent = p.time;
+  document.getElementById('panel-title').textContent = p.title;
+  document.getElementById('panel-body').innerHTML = p.body;
+  document.getElementById('panel-overlay').classList.add('open');
+  document.getElementById('panel').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closePanel() {
+  document.getElementById('panel-overlay').classList.remove('open');
+  document.getElementById('panel').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+// ═══════════════════════════════════════
+// HISTORIAL
+// ═══════════════════════════════════════
+function toggleHistorial() {
+  const c = document.getElementById('historial-content');
+  const a = document.getElementById('hist-arrow');
+  const open = c.classList.toggle('open');
+  a.textContent = open ? '▴' : '▾';
+}
+
+// ═══════════════════════════════════════
+// EQUIPOS — render
+// ═══════════════════════════════════════
+function renderTeam(players, containerId) {
+  const el = document.getElementById(containerId);
+  el.innerHTML = players.map((p, i) => `
+    <div class="player-row">
+      <div class="player-avatar">${i+1}</div>
+      <div class="player-info">
+        <div class="player-apodo">${p.apodo}${p.cap ? ' <span class="cap-badge">CAP</span>' : ''}</div>
+        <div class="player-name">${p.nombre}</div>
+        <div class="player-hcp">Hcp ${p.hcpE} / Juego ${p.hcpJ}</div>
+        ${p.pct !== null && p.pct !== undefined ? `<div class="player-pct">↗ ${p.pct}% · ${p.ed} ed.</div>` : (p.ed === 0 ? '<div class="player-hcp">Nueva incorporación</div>' : '')}
+      </div>
+    </div>`).join('');
+}
+
+// ═══════════════════════════════════════
+// SCOREBOARD
+// ═══════════════════════════════════════
+function calcScores() {
+  const pts = (res, maxPts) => {
+    if (res === 'W_LOCOS') return [maxPts, 0];
+    if (res === 'W_LOBOS') return [0, maxPts];
+    if (res === 'EMPATE') return [maxPts/2, maxPts/2];
+    return [null, null];
+  };
+  let fsL=0,fsLo=0,fbL=0,fbLo=0,sgL=0,sgLo=0,anyData=false;
+  state.results_fs.forEach(r => { const [a,b]=pts(r,0.5); if(a!==null){fsL+=a;fsLo+=b;anyData=true;} });
+  state.results_fb.forEach(r => { const [a,b]=pts(r,0.5); if(a!==null){fbL+=a;fbLo+=b;anyData=true;} });
+  state.results_sg.forEach(r => { const [a,b]=pts(r,1); if(a!==null){sgL+=a;sgLo+=b;anyData=true;} });
+
+  const hasSat = state.results_fs.some(r=>r) || state.results_fb.some(r=>r);
+  const hasDom = state.results_sg.some(r=>r);
+
+  if (!anyData) {
+    document.getElementById('edition-pre').style.display = '';
+    document.getElementById('edition-score').style.display = 'none';
+    document.getElementById('matches-block').style.display = 'none';
+    return;
+  }
+  document.getElementById('edition-pre').style.display = 'none';
+  document.getElementById('edition-score').style.display = '';
+
+  const fmt = v => v % 1 === 0 ? v : v.toFixed(1);
+  if (hasSat) {
+    document.getElementById('sc-fs-locos').textContent = fmt(fsL);
+    document.getElementById('sc-fs-lobos').textContent = fmt(fsLo);
+    document.getElementById('sc-fb-locos').textContent = fmt(fbL);
+    document.getElementById('sc-fb-lobos').textContent = fmt(fbLo);
+    document.getElementById('sc-par-locos').innerHTML = `<strong>${fmt(fsL+fbL)}</strong>`;
+    document.getElementById('sc-par-lobos').innerHTML = `<strong>${fmt(fsLo+fbLo)}</strong>`;
+  }
+  if (hasDom) {
+    document.getElementById('sc-sg-locos').textContent = fmt(sgL);
+    document.getElementById('sc-sg-lobos').textContent = fmt(sgLo);
+  }
+  const totL = fsL+fbL+sgL, totLo = fsLo+fbLo+sgLo;
+  document.getElementById('sc-tot-locos').innerHTML = `<strong>${fmt(totL)}</strong>`;
+  document.getElementById('sc-tot-lobos').innerHTML = `<strong>${fmt(totLo)}</strong>`;
+
+  // Partidos en juego
+  renderMatches();
+}
+
+function renderMatches() {
+  const block = document.getElementById('matches-block');
+  const list = document.getElementById('matches-list');
+  const pairingsSab = state.pairings_sab;
+  const pairingsDom = state.pairings_dom;
+  const hasPairings = pairingsSab.some(p=>p.locos[0]||p.lobos[0]);
+  if (!hasPairings) { block.style.display='none'; return; }
+  block.style.display = '';
+
+  let html = '';
+  const getLabel = (res, isLocos) => {
+    if (!res) return '<span class="match-result">—</span>';
+    if (res==='EMPATE') return '<span class="match-result H">½ · ½</span>';
+    const wins = (res==='W_LOCOS' && isLocos) || (res==='W_LOBOS' && !isLocos);
+    return `<span class="match-result ${wins?'W':'L'}">${wins?'WIN':'LOSS'}</span>`;
+  };
+
+  // Foursomes/Fourball
+  const anyFS = state.results_fs.some(r=>r);
+  const anyFB = state.results_fb.some(r=>r);
+  if (anyFS || anyFB) {
+    pairingsSab.forEach((p,i) => {
+      if (!p.locos[0] && !p.lobos[0]) return;
+      const l1 = p.locos[0]||'?', l2 = p.locos[1]||'?';
+      const lb1 = p.lobos[0]||'?', lb2 = p.lobos[1]||'?';
+      const res = anyFS && state.results_fs[i] ? state.results_fs[i] : (anyFB ? state.results_fb[i] : '');
+      html += `<div class="match-row"><span>${l1}/${l2} vs ${lb1}/${lb2}</span>${getLabel(res, true)}</div>`;
+    });
+  }
+  // Singles
+  const anySG = state.results_sg.some(r=>r);
+  if (anySG) {
+    pairingsDom.forEach((p,i) => {
+      if (!p.loco && !p.lobo) return;
+      html += `<div class="match-row"><span>${p.loco||'?'} vs ${p.lobo||'?'}</span>${getLabel(state.results_sg[i], true)}</div>`;
+    });
+  }
+  list.innerHTML = html || '<div style="font-size:12px;color:var(--gray);">Sin partidos aún</div>';
+}
+
+// ═══════════════════════════════════════
+// YO — PREFERENCIAS
+// ═══════════════════════════════════════
+function loadPrefs() {
+  const name = document.getElementById('yo-name').value;
+  if (!name) return;
+  try {
+    const prefs = JSON.parse(localStorage.getItem('rcp14_prefs_' + name) || '{}');
+    if (prefs.greenfee) {
+      document.querySelectorAll('[name="greenfee"]').forEach(r => { if(r.value===prefs.greenfee || (prefs.greenfee.startsWith(r.value) && r.value!=='No jugaré antes de la competición')) r.checked=true; });
+      if (prefs.greenfee === 'jueves') { document.getElementById('gf-time-jueves').style.display='block'; if(prefs.gf_time_j) document.getElementById('gf-time-j').value=prefs.gf_time_j; }
+      if (prefs.greenfee === 'viernes') { document.getElementById('gf-time-viernes').style.display='block'; if(prefs.gf_time_v) document.getElementById('gf-time-v').value=prefs.gf_time_v; }
+    }
+    if (prefs.mezquita) document.querySelectorAll('[name="mezquita"]').forEach(r => { if(r.value===prefs.mezquita) r.checked=true; });
+    if (prefs.bebidas) prefs.bebidas.forEach(v => { const el = document.querySelector(`[value="${v}"]`); if(el) el.checked=true; });
+    if (prefs.avit_sab) document.querySelectorAll('[name="avit-sab"]').forEach(r => { if(r.value===prefs.avit_sab) r.checked=true; });
+    if (prefs.avit_dom) document.querySelectorAll('[name="avit-dom"]').forEach(r => { if(r.value===prefs.avit_dom) r.checked=true; });
+    if (prefs.menu) document.querySelectorAll('[name="menu"]').forEach(r => { if(r.value===prefs.menu) r.checked=true; });
+  } catch(e){}
+  updateProgress();
+}
+
+function savePrefs() {
+  const name = document.getElementById('yo-name').value;
+  if (!name) return;
+  const gf = document.querySelector('[name="greenfee"]:checked');
+  const bebidas = Array.from(document.querySelectorAll('[type="checkbox"]:checked')).map(c=>c.value);
+  const prefs = {
+    greenfee: gf ? gf.value : '',
+    gf_time_j: document.getElementById('gf-time-j').value,
+    gf_time_v: document.getElementById('gf-time-v').value,
+    mezquita: (document.querySelector('[name="mezquita"]:checked')||{}).value || '',
+    bebidas,
+    avit_sab: (document.querySelector('[name="avit-sab"]:checked')||{}).value || '',
+    avit_dom: (document.querySelector('[name="avit-dom"]:checked')||{}).value || '',
+    menu: (document.querySelector('[name="menu"]:checked')||{}).value || '',
+  };
+  try { localStorage.setItem('rcp14_prefs_' + name, JSON.stringify(prefs)); } catch(e){}
+  updateProgress();
+}
+
+function toggleGFTime(day) {
+  document.getElementById('gf-time-jueves').style.display = day==='jueves' ? 'block' : 'none';
+  document.getElementById('gf-time-viernes').style.display = day==='viernes' ? 'block' : 'none';
+}
+
+function updateProgress() {
+  const checks = [
+    !!document.querySelector('[name="greenfee"]:checked'),
+    !!document.querySelector('[name="mezquita"]:checked'),
+    document.querySelectorAll('[type="checkbox"]:checked').length > 0,
+    !!document.querySelector('[name="avit-sab"]:checked'),
+    !!document.querySelector('[name="avit-dom"]:checked'),
+    !!document.querySelector('[name="menu"]:checked'),
+  ];
+  const done = checks.filter(Boolean).length;
+  document.getElementById('yo-progress').textContent = `${done} de 6 preferencias completadas`;
+  document.getElementById('yo-bar').style.width = (done/6*100) + '%';
+  const waBtn = document.getElementById('wa-btn');
+  const hasName = !!document.getElementById('yo-name').value;
+  waBtn.classList.toggle('disabled', !hasName);
+}
+
+function onNameChange() {
+  const name = document.getElementById('yo-name').value;
+  document.getElementById('yo-form').style.display = name ? 'block' : 'none';
+  if (name) { clearYoForm(); loadPrefs(); }
+  updateProgress();
+}
+
+function clearYoForm() {
+  document.querySelectorAll('[name="greenfee"],[name="mezquita"],[name="avit-sab"],[name="avit-dom"],[name="menu"]').forEach(r=>r.checked=false);
+  document.querySelectorAll('[type="checkbox"]').forEach(c=>c.checked=false);
+  document.getElementById('gf-time-jueves').style.display='none';
+  document.getElementById('gf-time-viernes').style.display='none';
+  document.getElementById('gf-time-j').value='';
+  document.getElementById('gf-time-v').value='';
+}
+
+function handleWA(e) {
+  const name = document.getElementById('yo-name').value;
+  if (!name) { e.preventDefault(); return false; }
+  const gf = document.querySelector('[name="greenfee"]:checked');
+  let gfTxt = gf ? gf.value : 'Sin indicar';
+  if (gf && gf.value==='jueves') { const t=document.getElementById('gf-time-j').value; gfTxt='Jueves 1 oct · '+(t||'hora sin especificar'); }
+  if (gf && gf.value==='viernes') { const t=document.getElementById('gf-time-v').value; gfTxt='Viernes 2 oct · '+(t||'hora sin especificar'); }
+  const mez = (document.querySelector('[name="mezquita"]:checked')||{}).value || 'Sin indicar';
+  const bebs = Array.from(document.querySelectorAll('[type="checkbox"]:checked')).map(c=>c.value).join(', ') || 'Sin indicar';
+  const as = (document.querySelector('[name="avit-sab"]:checked')||{}).value || 'Sin indicar';
+  const ad = (document.querySelector('[name="avit-dom"]:checked')||{}).value || 'Sin indicar';
+  const men = (document.querySelector('[name="menu"]:checked')||{}).value || 'Sin indicar';
+
+  const msg = `🏌️ RYDER CUP CÓRDOBA XIV — Preferencias de ${name}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+⛳ Green fee previo: ${gfTxt}
+🕌 Visita Mezquita viernes: ${mez}
+🍾 Bebidas cena viernes: ${bebs}
+🥪 Avituallamiento sábado: ${as}
+🥪 Avituallamiento domingo: ${ad}
+🍽️ Menú cena sábado: ${men}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━`;
+
+  const url = 'https://wa.me/34681637862?text=' + encodeURIComponent(msg);
+  window.open(url, '_blank');
+  e.preventDefault(); return false;
+}
+
+// ═══════════════════════════════════════
+// ADMIN — PIN
+// ═══════════════════════════════════════
+function openPin() {
+  document.getElementById('pin-overlay').classList.add('open');
+  document.getElementById('pin-input').value='';
+  document.getElementById('pin-err').textContent='';
+  setTimeout(()=>document.getElementById('pin-input').focus(),100);
+}
+function closePin() { document.getElementById('pin-overlay').classList.remove('open'); }
+function checkPin() {
+  const v = document.getElementById('pin-input').value;
+  if (v === '0000') { closePin(); openAdmin(); }
+  else { document.getElementById('pin-err').textContent='PIN incorrecto'; document.getElementById('pin-input').value=''; }
+}
+
+// Triple tap on title
+document.getElementById('hero-title').addEventListener('click', function() {
+  tapCount++;
+  if (tapTimer) clearTimeout(tapTimer);
+  tapTimer = setTimeout(()=>tapCount=0, 800);
+  if (tapCount >= 3) { tapCount=0; clearTimeout(tapTimer); openPin(); }
+});
+
+// ═══════════════════════════════════════
+// ADMIN — panel
+// ═══════════════════════════════════════
+function openAdmin() {
+  renderAdminPairings();
+  renderAdminResults();
+  document.getElementById('admin-overlay').classList.add('open');
+}
+function closeAdmin() { document.getElementById('admin-overlay').classList.remove('open'); }
+
+function makeSelect(opts, val, cls) {
+  return `<select class="${cls||'admin-select'}" onchange="void 0"><option value="">—</option>${opts.map(o=>`<option value="${o}"${o===val?' selected':''}>${o}</option>`).join('')}</select>`;
+}
+
+function renderAdminPairings() {
+  const locosNames = LOCOS.map(p=>p.apodo);
+  const lobosNames = LOBOS.map(p=>p.apodo);
+
+  // Sábado
+  let html = '';
+  for (let i=0;i<5;i++) {
+    const p = state.pairings_sab[i];
+    html += `<div style="margin-bottom:12px;">
+      <div style="font-size:11px;color:var(--gray);margin-bottom:4px;">Partido ${i+1}</div>
+      <div class="pairing-row">
+        <div>
+          <select class="admin-select" id="ps-l1-${i}" onchange="updatePairingSab(${i})"><option value="">—</option>${locosNames.map(n=>`<option${n===p.locos[0]?' selected':''}>${n}</option>`).join('')}</select>
+          <select class="admin-select" id="ps-l2-${i}" style="margin-top:4px;" onchange="updatePairingSab(${i})"><option value="">—</option>${locosNames.map(n=>`<option${n===p.locos[1]?' selected':''}>${n}</option>`).join('')}</select>
+        </div>
+        <span>VS</span>
+        <div>
+          <select class="admin-select" id="ps-lb1-${i}" onchange="updatePairingSab(${i})"><option value="">—</option>${lobosNames.map(n=>`<option${n===p.lobos[0]?' selected':''}>${n}</option>`).join('')}</select>
+          <select class="admin-select" id="ps-lb2-${i}" style="margin-top:4px;" onchange="updatePairingSab(${i})"><option value="">—</option>${lobosNames.map(n=>`<option${n===p.lobos[1]?' selected':''}>${n}</option>`).join('')}</select>
+        </div>
+      </div></div>`;
+  }
+  document.getElementById('pairings-sab').innerHTML = html;
+
+  // Domingo
+  let html2 = '';
+  for (let i=0;i<10;i++) {
+    const p = state.pairings_dom[i];
+    html2 += `<div class="pairing-row" style="margin-bottom:8px;">
+      <select class="admin-select" id="pd-l-${i}" onchange="updatePairingDom(${i})"><option value="">Loco</option>${locosNames.map(n=>`<option${n===p.loco?' selected':''}>${n}</option>`).join('')}</select>
+      <span>VS</span>
+      <select class="admin-select" id="pd-lb-${i}" onchange="updatePairingDom(${i})"><option value="">Lobo</option>${lobosNames.map(n=>`<option${n===p.lobo?' selected':''}>${n}</option>`).join('')}</select>
+    </div>`;
+  }
+  document.getElementById('pairings-dom').innerHTML = html2;
+}
+
+function updatePairingSab(i) {
+  state.pairings_sab[i] = {
+    locos: [document.getElementById(`ps-l1-${i}`).value, document.getElementById(`ps-l2-${i}`).value],
+    lobos: [document.getElementById(`ps-lb1-${i}`).value, document.getElementById(`ps-lb2-${i}`).value],
+  };
+}
+function updatePairingDom(i) {
+  state.pairings_dom[i] = {
+    loco: document.getElementById(`pd-l-${i}`).value,
+    lobo: document.getElementById(`pd-lb-${i}`).value,
+  };
+}
+
+function renderAdminResults() {
+  const opts = [
+    {value:'W_LOCOS',label:'Win Locos'},
+    {value:'EMPATE',label:'Empate'},
+    {value:'W_LOBOS',label:'Win Lobos'},
+  ];
+  const makeResRow = (idx, arr, id, pts) => {
+    const p = idx < state[arr === 'results_sg' ? 'pairings_dom' : 'pairings_sab'][idx < state.pairings_sab.length ? idx : 0];
+    let label = idx+1;
+    if (arr === 'results_sg') {
+      const pd = state.pairings_dom[idx];
+      if(pd && (pd.loco||pd.lobo)) label = `${pd.loco||'?'} vs ${pd.lobo||'?'}`;
+    } else {
+      const ps = state.pairings_sab[idx];
+      if(ps && (ps.locos[0]||ps.lobos[0])) label = `${ps.locos[0]||'?'}/${ps.locos[1]||'?'} vs ${ps.lobos[0]||'?'}/${ps.lobos[1]||'?'}`;
+    }
+    const cur = state[arr][idx];
+    return `<div class="result-row">
+      <span class="match-label" title="${label}">${label}</span>
+      <select class="result-select" onchange="state['${arr}'][${idx}]=this.value">
+        <option value="">Sin resultado</option>
+        ${opts.map(o=>`<option value="${o.value}"${o.value===cur?' selected':''}>${o.label} (${pts})</option>`).join('')}
+      </select>
+    </div>`;
+  };
+
+  document.getElementById('results-fs').innerHTML = Array(5).fill(0).map((_,i)=>makeResRow(i,'results_fs','fs','+0.5')).join('');
+  document.getElementById('results-fb').innerHTML = Array(5).fill(0).map((_,i)=>makeResRow(i,'results_fb','fb','+0.5')).join('');
+  document.getElementById('results-sg').innerHTML = Array(10).fill(0).map((_,i)=>makeResRow(i,'results_sg','sg','+1.0')).join('');
+}
+
+function saveAdmin() {
+  // Collect all select values before saving
+  for (let i=0;i<5;i++) updatePairingSab(i);
+  for (let i=0;i<10;i++) updatePairingDom(i);
+  // results already bound via onchange
+  saveState();
+  closeAdmin();
+  calcScores();
+  renderAdminResults();
+}
+
+function resetEdition() {
+  if (!confirm('¿Resetear todos los datos de la XIV edición? Esta acción no se puede deshacer.')) return;
+  if (!confirm('¿Confirmar RESET? Se borrarán emparejamientos y resultados.')) return;
+  state = {
+    pairings_sab: Array(5).fill(null).map(()=>({locos:['',''],lobos:['','']})),
+    pairings_dom: Array(10).fill(null).map(()=>({loco:'',lobo:''})),
+    results_fs: Array(5).fill(''),
+    results_fb: Array(5).fill(''),
+    results_sg: Array(10).fill(''),
+  };
+  saveState();
+  calcScores();
+  closeAdmin();
+}
+
+// ═══════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════
+loadState();
+renderTeam(LOBOS, 'lobos-players');
+renderTeam(LOCOS, 'locos-players');
+calcScores();
+</script>
+</body>
+</html>

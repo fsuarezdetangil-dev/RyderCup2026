@@ -1,0 +1,1217 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#0A0A0A">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Apuestas · XIV Ryder Cup Córdoba</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0A0A0A;
+  --gold: #C9A052;
+  --gold-dim: rgba(201,160,82,0.2);
+  --white: #FFFFFF;
+  --gray: #A0A0A0;
+  --surface: #161616;
+  --surface2: #1e1e1e;
+  --border: #2a2a2a;
+  --locos: #ef4444;
+  --locos-dim: rgba(239,68,68,0.15);
+  --lobos: #3b82f6;
+  --lobos-dim: rgba(59,130,246,0.15);
+  --green: #22c55e;
+  --green-dim: rgba(34,197,94,0.15);
+  --red: #ef4444;
+  --red-dim: rgba(239,68,68,0.15);
+  --nav-h: 64px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: var(--bg);
+  color: var(--white);
+  font-family: 'Inter', sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+.bebas { font-family: 'Bebas Neue', cursive; letter-spacing: 1px; }
+#nav {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  height: var(--nav-h);
+  background: var(--bg);
+  border-top: 1px solid var(--gold);
+  display: flex;
+  z-index: 100;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+.nav-tab {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  cursor: pointer;
+  color: #444;
+  transition: color 0.15s;
+  border: none;
+  background: none;
+  -webkit-tap-highlight-color: transparent;
+  position: relative;
+}
+.nav-tab.active { color: var(--gold); }
+.nav-tab.active::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 20%; right: 20%;
+  height: 2px;
+  background: var(--gold);
+}
+.nav-tab svg { width: 22px; height: 22px; }
+.nav-label { font-size: 9px; font-weight: 500; }
+.section {
+  display: none;
+  padding: 0 16px calc(var(--nav-h) + 24px);
+  min-height: 100vh;
+}
+.section.active { display: block; }
+.page-header {
+  padding: 20px 0 16px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 20px;
+}
+.page-title { font-family: 'Bebas Neue', cursive; font-size: 26px; color: var(--gold); letter-spacing: 2px; }
+.page-sub { font-size: 12px; color: var(--gray); margin-top: 2px; }
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 12px;
+}
+.card-title {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--gray);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 10px;
+}
+.badge {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 6px;
+}
+.badge-gold { background: var(--gold-dim); color: var(--gold); }
+.badge-green { background: var(--green-dim); color: var(--green); }
+.badge-red { background: var(--red-dim); color: var(--red); }
+.badge-locos { background: var(--locos-dim); color: var(--locos); }
+.badge-lobos { background: var(--lobos-dim); color: var(--lobos); }
+.badge-gray { background: rgba(160,160,160,0.1); color: var(--gray); }
+.loco-text { color: var(--locos); }
+.lobo-text { color: var(--lobos); }
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 13px;
+}
+.row:last-child { border-bottom: none; }
+select, input[type="text"], input[type="number"], input[type="password"] {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--white);
+  padding: 10px 12px;
+  font-size: 14px;
+  font-family: 'Inter', sans-serif;
+  width: 100%;
+  -webkit-appearance: none;
+}
+select:focus, input:focus { outline: none; border-color: var(--gold); }
+select option { background: #1e1e1e; }
+.btn {
+  display: block;
+  width: 100%;
+  padding: 13px;
+  border-radius: 10px;
+  border: none;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+  -webkit-tap-highlight-color: transparent;
+  transition: opacity 0.15s;
+}
+.btn:active { opacity: 0.7; }
+.btn-gold { background: var(--gold); color: #000; }
+.btn-outline { background: transparent; border: 1px solid var(--gold); color: var(--gold); }
+.btn-danger { background: transparent; border: 1px solid var(--red); color: var(--red); }
+.btn-sm { width: auto; display: inline-block; padding: 8px 16px; font-size: 12px; border-radius: 8px; }
+.form-group { margin-bottom: 14px; }
+.form-label { font-size: 10px; color: var(--gray); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; display: block; }
+.status-bar {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px 16px;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.status-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.status-dot.open { background: var(--green); box-shadow: 0 0 6px var(--green); }
+.status-dot.closed { background: var(--red); }
+.status-dot.waiting { background: var(--gold); animation: pulse 2s infinite; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+.status-text { font-size: 12px; color: var(--gray); }
+.divider { height: 1px; background: var(--border); margin: 16px 0; }
+.admin-tabs {
+  display: flex;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+.admin-tab {
+  flex: 1;
+  padding: 10px 4px;
+  text-align: center;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--gray);
+  cursor: pointer;
+  border: none;
+  background: none;
+  -webkit-tap-highlight-color: transparent;
+}
+.admin-tab.active { background: var(--gold-dim); color: var(--gold); }
+.odds-box {
+  background: var(--surface2);
+  border-radius: 8px;
+  padding: 8px;
+  text-align: center;
+}
+.odds-num { font-family: 'Bebas Neue', cursive; font-size: 20px; }
+.odds-label { font-size: 9px; color: var(--gray); }
+.match-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px;
+  margin-bottom: 8px;
+}
+.net-positive { color: var(--green); font-weight: 700; }
+.net-negative { color: var(--red); font-weight: 700; }
+.net-zero { color: var(--gray); }
+.liq-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+.liq-table th { text-align: left; padding: 8px 6px; color: var(--gray); font-size: 10px; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid var(--border); }
+.liq-table td { padding: 10px 6px; border-bottom: 1px solid #181818; }
+.liq-table tr:last-child td { border-bottom: none; }
+.toggle-group { display: flex; gap: 6px; }
+.toggle-btn {
+  flex: 1;
+  padding: 10px 6px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--surface2);
+  color: var(--gray);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  text-align: center;
+  -webkit-tap-highlight-color: transparent;
+}
+.toggle-btn.sel-loco { border-color: var(--locos); background: var(--locos-dim); color: var(--locos); }
+.toggle-btn.sel-lobo { border-color: var(--lobos); background: var(--lobos-dim); color: var(--lobos); }
+.toggle-btn.sel-locos { border-color: var(--locos); background: var(--locos-dim); color: var(--locos); }
+.toggle-btn.sel-lobos { border-color: var(--lobos); background: var(--lobos-dim); color: var(--lobos); }
+.toggle-btn.sel-gold { border-color: var(--gold); background: var(--gold-dim); color: var(--gold); }
+.pin-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  gap: 16px;
+  text-align: center;
+}
+.pin-icon { font-size: 48px; }
+.pin-title { font-family: 'Bebas Neue', cursive; font-size: 24px; color: var(--gold); letter-spacing: 2px; }
+#toast {
+  position: fixed;
+  bottom: calc(var(--nav-h) + 16px);
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: var(--surface);
+  border: 1px solid var(--gold);
+  color: var(--white);
+  padding: 10px 20px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 500;
+  z-index: 200;
+  opacity: 0;
+  transition: all 0.3s;
+  white-space: nowrap;
+  pointer-events: none;
+}
+#toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+.empty { text-align: center; padding: 40px 20px; color: var(--gray); font-size: 13px; line-height: 1.6; }
+.empty-icon { font-size: 40px; margin-bottom: 12px; }
+.amount-row { display: flex; align-items: center; gap: 8px; }
+.amount-row input { flex: 1; }
+.amount-step {
+  width: 40px; height: 40px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--surface2);
+  color: var(--white);
+  font-size: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+.check-row { display: flex; align-items: center; gap: 10px; padding: 8px 0; }
+.check-row input[type="checkbox"] { width: 20px; height: 20px; accent-color: var(--gold); flex-shrink: 0; }
+.check-label { font-size: 13px; }
+.team-label {
+  font-family: 'Bebas Neue', cursive;
+  font-size: 13px;
+  letter-spacing: 1px;
+  padding: 6px 0 4px;
+}
+.progress-bar { background: var(--bg); border-radius: 6px; height: 5px; overflow: hidden; margin-top: 10px; }
+.progress-fill { height: 100%; border-radius: 6px; background: var(--gold); transition: width 0.3s; }
+.icon-btn {
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 4px 10px;
+  font-size: 11px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  font-family: 'Inter', sans-serif;
+}
+.icon-btn-green { border-color: var(--green); color: var(--green); }
+.icon-btn-red { border-color: var(--red); color: var(--red); }
+</style>
+</head>
+<body>
+
+<div id="toast"></div>
+
+<nav id="nav">
+  <button class="nav-tab active" onclick="showTab('mis')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 12V22H4V12"/><path d="M22 7H2v5h20V7z"/><path d="M12 22V7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>
+    <span class="nav-label">Mis Apuestas</span>
+  </button>
+  <button class="nav-tab" onclick="showTab('cuadro')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18"/></svg>
+    <span class="nav-label">General</span>
+  </button>
+  <button class="nav-tab" onclick="showTab('resultados')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+    <span class="nav-label">Resultados</span>
+  </button>
+  <button class="nav-tab" onclick="showTab('singles')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
+    <span class="nav-label">Singles</span>
+  </button>
+  <button class="nav-tab" onclick="showTab('admin')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+    <span class="nav-label">Admin</span>
+  </button>
+</nav>
+
+<section class="section active" id="sec-mis">
+  <div class="page-header"><div class="page-title">💰 Mis Apuestas</div><div class="page-sub">XIV Ryder Cup Córdoba · 3-4 Oct 2025</div></div>
+  <div id="mis-content"></div>
+</section>
+
+<section class="section" id="sec-cuadro">
+  <div class="page-header"><div class="page-title">📊 Cuadro General</div><div class="page-sub">Todas las apuestas del torneo</div></div>
+  <div id="cuadro-content"></div>
+</section>
+
+<section class="section" id="sec-resultados">
+  <div class="page-header"><div class="page-title">🏆 Resultados</div><div class="page-sub">Liquidación final de apuestas</div></div>
+  <div id="resultados-content"></div>
+</section>
+
+<section class="section" id="sec-singles">
+  <div class="page-header"><div class="page-title">⛳ Singles</div><div class="page-sub">Emparejamientos domingo · Estadísticas históricas</div></div>
+  <div id="singles-content"></div>
+</section>
+
+<section class="section" id="sec-admin">
+  <div class="page-header"><div class="page-title">🔐 Admin</div><div class="page-sub">Panel de administración</div></div>
+  <div id="admin-content"></div>
+</section>
+
+<script>
+// ── CONSTANTS ──────────────────────────────────────────────────────────────
+const LOCOS = ['Alon','Béjar','Blasfi','Bugo','Agus','Nico','Castejas','Juanma','Merello','Prieto'];
+const LOBOS = ['Jaki','Jido','Diego','Gupi','Pedro','Herrero','Otegui','Nacho','Juan','Fertxo'];
+const ALL = [...LOCOS, ...LOBOS];
+const KEY = 'ryder2026_bets_v1';
+const MAX = 20;
+
+// ── STATE ──────────────────────────────────────────────────────────────────
+let S = {
+  config: {
+    pin: '2026',
+    oddsType: 'parimutuel',
+    bank: 'Alberto',
+    open: false,          // markets open
+    closed: false,        // markets closed
+    published: false      // results published
+  },
+  singles: Array.from({length:10},(_,i)=>({id:i+1,loco:null,lobo:null,winner:null})),
+  finalResult: null,      // 'locos' | 'lobos'
+  bets: []               // {id,bettor,type,matchId,pick,amount,cash,ts}
+};
+
+// UI state
+let tab = 'mis';
+let unlocked = false;
+let asub = 'setup';
+let me = null;
+let pick = null;
+
+// ── STORAGE ────────────────────────────────────────────────────────────────
+function load() {
+  try { const r=localStorage.getItem(KEY); if(r) S={...S,...JSON.parse(r)}; } catch(e){}
+}
+function save() { localStorage.setItem(KEY,JSON.stringify(S)); }
+
+function exportJSON() {
+  const b=new Blob([JSON.stringify(S,null,2)],{type:'application/json'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(b);
+  a.download='apuestas-ryder2026.json'; a.click(); toast('JSON exportado ✓');
+}
+function importJSON(f) {
+  const r=new FileReader();
+  r.onload=e=>{try{S={...S,...JSON.parse(e.target.result)};save();render();toast('Importado ✓');}catch(e){toast('Error al importar');}};
+  r.readAsText(f);
+}
+
+// ── ENGINE ─────────────────────────────────────────────────────────────────
+function team(p){ return LOCOS.includes(p)?'loco':LOBOS.includes(p)?'lobo':null; }
+function spent(p){ return S.bets.filter(b=>b.bettor===p).reduce((s,b)=>s+b.amount,0); }
+function myBets(p){ return S.bets.filter(b=>b.bettor===p); }
+function matchBets(id){ return S.bets.filter(b=>b.type==='singles'&&b.matchId===id); }
+function finalBets(){ return S.bets.filter(b=>b.type==='final'); }
+
+function impliedOdds(bets,p){
+  const tot=bets.reduce((s,b)=>s+b.amount,0);
+  const side=bets.filter(b=>b.pick===p).reduce((s,b)=>s+b.amount,0);
+  if(!tot||!side) return null;
+  if(S.config.oddsType==='fixed') return 2.00;
+  return tot/side;
+}
+
+function calcMarket(bets, winner, empate) {
+  if(empate) return bets.map(b=>({...b,net:0,gross:b.amount}));
+  const wb=bets.filter(b=>b.pick===winner);
+  const lb=bets.filter(b=>b.pick!==winner);
+  const tot=bets.reduce((s,b)=>s+b.amount,0);
+  const wp=wb.reduce((s,b)=>s+b.amount,0);
+  return [...wb.map(b=>{const g=wp?(b.amount/wp)*tot:b.amount;return{...b,gross:g,net:g-b.amount};}),
+          ...lb.map(b=>({...b,gross:0,net:-b.amount}))];
+}
+
+function calcAll() {
+  const net={};
+  ALL.forEach(p=>net[p]=0);
+  S.singles.forEach(m=>{
+    if(!m.winner) return;
+    const bets=matchBets(m.id); if(!bets.length) return;
+    calcMarket(bets,m.winner,m.winner==='empate').forEach(p=>{if(net[p.bettor]!==undefined)net[p.bettor]+=p.net;});
+  });
+  if(S.finalResult){
+    calcMarket(finalBets(),S.finalResult,false).forEach(p=>{if(net[p.bettor]!==undefined)net[p.bettor]+=p.net;});
+  }
+  return net;
+}
+
+// ── TOAST ──────────────────────────────────────────────────────────────────
+function toast(msg){
+  const el=document.getElementById('toast');
+  el.textContent=msg; el.classList.add('show');
+  setTimeout(()=>el.classList.remove('show'),2400);
+}
+
+// ── NAVIGATION ─────────────────────────────────────────────────────────────
+function showTab(t){
+  tab=t;
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(b=>b.classList.remove('active'));
+  document.getElementById('sec-'+t).classList.add('active');
+  const tabs=['mis','cuadro','resultados','singles','admin'];
+  document.querySelectorAll('.nav-tab')[tabs.indexOf(t)]?.classList.add('active');
+  render();
+}
+function render(){ renderTab(tab); }
+function renderTab(t){
+  switch(t){
+    case 'mis': renderMis(); break;
+    case 'cuadro': renderCuadro(); break;
+    case 'resultados': renderResultados(); break;
+    case 'singles': renderSingles(); break;
+    case 'admin': renderAdmin(); break;
+  }
+}
+
+// ── STATUS BAR ─────────────────────────────────────────────────────────────
+function statusHtml(){
+  const c=S.config;
+  let dot,txt;
+  if(c.published){dot='closed';txt='🏆 Resultados publicados';}
+  else if(c.closed){dot='closed';txt='🔒 Mercados cerrados — sin más apuestas';}
+  else if(c.open){dot='open';txt='🟢 Mercados abiertos';}
+  else{dot='waiting';txt='⏳ Esperando apertura de mercados';}
+  return `<div class="status-bar"><div class="status-dot ${dot}"></div><div class="status-text">${txt}</div></div>`;
+}
+
+// ── TAB: MIS APUESTAS ──────────────────────────────────────────────────────
+function renderMis(){
+  const el=document.getElementById('mis-content');
+  let opts='<option value="">— Selecciona tu nombre —</option>';
+  opts+='<optgroup label="🔴 LOCOS">'+LOCOS.map(p=>`<option value="${p}"${me===p?' selected':''}>${p}</option>`).join('')+'</optgroup>';
+  opts+='<optgroup label="🔵 LOBOS">'+LOBOS.map(p=>`<option value="${p}"${me===p?' selected':''}>${p}</option>`).join('')+'</optgroup>';
+  let h=statusHtml();
+  h+=`<div class="form-group"><select onchange="setMe(this.value)">${opts}</select></div>`;
+  if(!me){h+=`<div class="empty"><div class="empty-icon">🎯</div>Selecciona tu nombre para ver tus apuestas</div>`;el.innerHTML=h;return;}
+  const bets=myBets(me), tot=spent(me), t=team(me);
+  const border=t==='loco'?'var(--locos)':'var(--lobos)';
+  h+=`<div class="card" style="border-color:${border}">
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <div><div style="font-size:18px;font-weight:700">${me}</div>
+        <div style="font-size:11px;margin-top:2px">Equipo <span style="color:${border};font-weight:700">${t==='loco'?'LOCOS':'LOBOS'}</span></div></div>
+      <div style="text-align:right">
+        <div class="badge badge-gold">${tot}€ / ${MAX}€</div>
+        <div style="font-size:10px;color:var(--gray);margin-top:3px">apostado</div>
+      </div>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" style="width:${Math.min(100,tot/MAX*100)}%"></div></div>
+  </div>`;
+  if(!bets.length){h+=`<div class="empty"><div class="empty-icon">📭</div>Sin apuestas registradas<br><span style="font-size:11px">El admin las registra en el panel Admin</span></div>`;}
+  else{
+    h+='<div class="card-title" style="margin-top:4px">Apuestas activas</div>';
+    bets.forEach(b=>{
+      const match=b.type==='singles'?S.singles.find(s=>s.id===b.matchId):null;
+      const allb=b.type==='singles'?matchBets(b.matchId):finalBets();
+      const odds=impliedOdds(allb,b.pick);
+      const oddsStr=odds?`×${odds.toFixed(2)}`:'—';
+      const pickLabel=b.pick==='loco'?(match?.loco||'Loco'):b.pick==='lobo'?(match?.lobo||'Lobo'):b.pick==='locos'?'Locos ganan':'Lobos ganan/retienen';
+      const pickColor=(b.pick==='loco'||b.pick==='locos')?'var(--locos)':'var(--lobos)';
+      let result='';
+      if(S.config.published){
+        const w=b.type==='singles'?match?.winner:S.finalResult;
+        if(w==='empate'){result=`<span class="badge badge-gray">↩ Push</span>`;}
+        else if(w&&(b.pick===w||b.pick===w+'s')){result=`<span class="badge badge-green">✓ Ganaste</span>`;}
+        else if(w){result=`<span class="badge badge-red">✗ Perdiste</span>`;}
+      }
+      h+=`<div class="match-card"><div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px">
+        <div style="flex:1">
+          <div style="font-size:10px;color:var(--gray);margin-bottom:3px">${b.type==='singles'?`Singles #${b.matchId}`:'Resultado Final'}</div>
+          <div style="font-size:14px;font-weight:600;color:${pickColor}">${pickLabel}</div>
+          <div style="font-size:10px;margin-top:3px;color:${b.cash?'var(--green)':'var(--gold)'}">${b.cash?'✓ Cash entregado':'⏳ Cash pendiente'}</div>
+        </div>
+        <div style="text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:4px">
+          <div style="font-family:'Bebas Neue',cursive;font-size:24px;color:var(--gold)">${b.amount}€</div>
+          <div style="font-size:10px;color:var(--gray)">cuota ${oddsStr}</div>
+          ${result}
+        </div>
+      </div></div>`;
+    });
+  }
+  if(S.config.published){
+    const nets=calcAll(); const n=nets[me]||0;
+    const cls=n>0?'net-positive':n<0?'net-negative':'net-zero';
+    const sign=n>0?'+':'';
+    h+=`<div class="card" style="margin-top:8px;text-align:center">
+      <div style="font-size:10px;color:var(--gray);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">Saldo Final</div>
+      <div class="${cls}" style="font-family:'Bebas Neue',cursive;font-size:40px;letter-spacing:2px">${sign}${n.toFixed(2)}€</div>
+      <div style="font-size:11px;color:var(--gray);margin-top:4px">${n>0?`Cobrar de ${S.config.bank}`:n<0?`Pagar a ${S.config.bank}`:'En tablas — ni cobras ni pagas'}</div>
+    </div>`;
+  }
+  el.innerHTML=h;
+}
+function setMe(v){me=v||null;renderMis();}
+
+// ── TAB: CUADRO GENERAL ────────────────────────────────────────────────────
+function renderCuadro(){
+  const el=document.getElementById('cuadro-content');
+  const totPool=S.bets.reduce((s,b)=>s+b.amount,0);
+  const cashOk=S.bets.filter(b=>b.cash).reduce((s,b)=>s+b.amount,0);
+  let h=statusHtml();
+  h+=`<div class="card"><div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;text-align:center">
+    <div><div style="font-family:'Bebas Neue',cursive;font-size:28px;color:var(--gold)">${totPool}€</div><div style="font-size:10px;color:var(--gray)">Pozo total</div></div>
+    <div><div style="font-family:'Bebas Neue',cursive;font-size:28px;color:var(--gold)">${S.bets.length}</div><div style="font-size:10px;color:var(--gray)">Apuestas</div></div>
+    <div><div style="font-family:'Bebas Neue',cursive;font-size:28px;color:var(--green)">${cashOk}€</div><div style="font-size:10px;color:var(--gray)">Cash ✓</div></div>
+  </div></div>`;
+  // Players
+  [['🔴 LOCOS',LOCOS,'locos'],['🔵 LOBOS',LOBOS,'lobos']].forEach(([label,players,cls])=>{
+    h+=`<div class="team-label" style="color:var(--${cls.slice(0,-1)})">${label}</div>`;
+    players.forEach(p=>{
+      const pb=myBets(p), tot=spent(p), cash=pb.filter(b=>b.cash).reduce((s,b)=>s+b.amount,0);
+      h+=`<div class="match-card" style="margin-bottom:6px"><div style="display:flex;align-items:center;justify-content:space-between">
+        <div style="font-weight:600">${p}</div>
+        <div style="display:flex;align-items:center;gap:6px">
+          ${tot>0?`<span class="badge badge-gold">${tot}€</span>`:'<span style="font-size:11px;color:var(--gray)">no apostó</span>'}
+          ${tot>0&&cash>=tot?`<span style="font-size:12px;color:var(--green)">✓</span>`:tot>0?`<span style="font-size:12px;color:var(--gold)">⏳</span>`:''}
+        </div>
+      </div>
+      ${pb.length?`<div style="margin-top:8px;display:flex;flex-wrap:wrap;gap:4px">`+pb.map(b=>{
+        const lbl=b.type==='singles'?`S#${b.matchId}·${b.pick}`:`Final·${b.pick}`;
+        const bc=(b.pick==='loco'||b.pick==='locos')?'badge-locos':'badge-lobos';
+        return `<span class="badge ${bc}" style="font-size:10px">${lbl} ${b.amount}€</span>`;
+      }).join('')+'</div>':''}
+      </div>`;
+    });
+  });
+  // Markets
+  if(S.config.open){
+    const confSingles=S.singles.filter(s=>s.loco&&s.lobo);
+    if(confSingles.length){
+      h+='<div class="divider"></div><div class="card-title">Pozos Singles</div>';
+      confSingles.forEach(m=>{
+        const bets=matchBets(m.id);
+        const lp=bets.filter(b=>b.pick==='loco').reduce((s,b)=>s+b.amount,0);
+        const wp=bets.filter(b=>b.pick==='lobo').reduce((s,b)=>s+b.amount,0);
+        const tot=lp+wp;
+        h+=`<div class="match-card" style="margin-bottom:6px">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+            <span class="loco-text" style="font-weight:600">${m.loco}</span>
+            <span style="font-size:10px;color:var(--gray)">vs</span>
+            <span class="lobo-text" style="font-weight:600">${m.lobo}</span>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 36px 1fr;gap:6px;align-items:center">
+            <div class="odds-box"><div class="odds-num" style="color:var(--locos)">${lp}€</div><div class="odds-label">${lp&&tot?'×'+(tot/lp).toFixed(2):'—'}</div></div>
+            <div style="font-size:9px;color:var(--gray);text-align:center">${tot}€<br>POZO</div>
+            <div class="odds-box"><div class="odds-num" style="color:var(--lobos)">${wp}€</div><div class="odds-label">${wp&&tot?'×'+(tot/wp).toFixed(2):'—'}</div></div>
+          </div>
+          ${m.winner?`<div style="text-align:center;margin-top:8px"><span class="badge ${m.winner==='empate'?'badge-gray':m.winner==='loco'?'badge-locos':'badge-lobos'}">${m.winner==='empate'?'↩ Empate / Push':m.winner==='loco'?m.loco+' ganó':m.lobo+' ganó'}</span></div>`:''}
+        </div>`;
+      });
+    }
+    // Final market
+    const fb=finalBets();
+    const lp2=fb.filter(b=>b.pick==='locos').reduce((s,b)=>s+b.amount,0);
+    const wp2=fb.filter(b=>b.pick==='lobos').reduce((s,b)=>s+b.amount,0);
+    const ft=lp2+wp2;
+    h+=`<div class="divider"></div><div class="card-title">Mercado Final de Edición</div>
+    <div class="match-card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+        <span class="loco-text" style="font-weight:600">Locos ganan</span>
+        <span style="font-size:10px;color:var(--gray)">vs</span>
+        <span class="lobo-text" style="font-weight:600;text-align:right;font-size:12px">Lobos ganan/<br>retienen</span>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 36px 1fr;gap:6px;align-items:center">
+        <div class="odds-box"><div class="odds-num" style="color:var(--locos)">${lp2}€</div><div class="odds-label">${lp2&&ft?'×'+(ft/lp2).toFixed(2):'—'}</div></div>
+        <div style="font-size:9px;color:var(--gray);text-align:center">${ft}€<br>POZO</div>
+        <div class="odds-box"><div class="odds-num" style="color:var(--lobos)">${wp2}€</div><div class="odds-label">${wp2&&ft?'×'+(ft/wp2).toFixed(2):'—'}</div></div>
+      </div>
+      ${S.finalResult?`<div style="text-align:center;margin-top:8px"><span class="badge ${S.finalResult==='locos'?'badge-locos':'badge-lobos'}">${S.finalResult==='locos'?'Locos ganaron':'Lobos ganaron/retuvieron'}</span></div>`:''}
+    </div>`;
+  }
+  el.innerHTML=h;
+}
+
+// ── TAB: RESULTADOS ────────────────────────────────────────────────────────
+function renderResultados(){
+  const el=document.getElementById('resultados-content');
+  if(!S.config.published){
+    el.innerHTML=`<div class="empty"><div class="empty-icon">⏳</div>Resultados no disponibles aún<br><span style="font-size:11px">El admin los publicará tras el torneo del domingo</span></div>`;
+    return;
+  }
+  const nets=calcAll();
+  const players=ALL.filter(p=>nets[p]!==0||myBets(p).length>0).sort((a,b)=>nets[b]-nets[a]);
+  const oddsLbl=S.config.oddsType==='fixed'?'Cuotas fijas 1:1':'Sistema pari-mutuel';
+  let h=`<div class="card" style="text-align:center;margin-bottom:16px"><div style="font-size:11px;color:var(--gray)">${oddsLbl} · Banco: <strong>${S.config.bank}</strong></div></div>`;
+  // Ranking
+  h+='<div class="card-title">Ranking de saldos</div>';
+  players.forEach((p,i)=>{
+    const n=nets[p];
+    const cls=n>0?'net-positive':n<0?'net-negative':'net-zero';
+    const sign=n>0?'+':'';
+    const t=team(p);
+    const medal=[n>0?'🥇':'',...[n>0?'🥈':''],...[n>0?'🥉':''],...['']].slice(0,1)[i<3&&n>0?i:3]||'';
+    h+=`<div class="match-card" style="margin-bottom:6px">
+      <div style="display:flex;align-items:center;justify-content:space-between">
+        <div style="display:flex;align-items:center;gap:10px">
+          <div style="font-size:18px;min-width:28px;text-align:center">${i===0&&n>0?'🥇':i===1&&n>0?'🥈':i===2&&n>0?'🥉':i+1}</div>
+          <div>
+            <div style="font-weight:600">${p}</div>
+            <div style="font-size:10px;color:${t==='loco'?'var(--locos)':'var(--lobos)'}">${t==='loco'?'LOCOS':'LOBOS'}</div>
+          </div>
+        </div>
+        <div class="${cls}" style="font-family:'Bebas Neue',cursive;font-size:24px">${sign}${n.toFixed(2)}€</div>
+      </div>
+    </div>`;
+  });
+  // Payers / receivers
+  const payers=players.filter(p=>nets[p]<0);
+  const receivers=players.filter(p=>nets[p]>0);
+  if(payers.length||receivers.length){
+    h+=`<div class="divider"></div><div class="card-title">Liquidación vía ${S.config.bank}</div><div class="card">`;
+    if(payers.length){
+      h+=`<div style="font-size:10px;font-weight:700;color:var(--red);margin-bottom:8px">PAGAN A ${S.config.bank.toUpperCase()}</div>`;
+      payers.forEach(p=>{h+=`<div class="row"><span>${p}</span><span class="net-negative">${nets[p].toFixed(2)}€</span></div>`;});
+    }
+    if(receivers.length){
+      h+=`<div style="font-size:10px;font-weight:700;color:var(--green);margin-top:${payers.length?12:0}px;margin-bottom:8px">${S.config.bank.toUpperCase()} PAGA A</div>`;
+      receivers.forEach(p=>{h+=`<div class="row"><span>${p}</span><span class="net-positive">+${nets[p].toFixed(2)}€</span></div>`;});
+    }
+    h+='</div>';
+  }
+  el.innerHTML=h;
+}
+
+// ── TAB: ADMIN ─────────────────────────────────────────────────────────────
+function renderAdmin(){
+  const el=document.getElementById('admin-content');
+  if(!unlocked){
+    el.innerHTML=`<div class="pin-screen">
+      <div class="pin-icon">🔐</div>
+      <div class="pin-title">Panel Admin</div>
+      <div style="font-size:12px;color:var(--gray)">Introduce el PIN de 4 dígitos</div>
+      <input type="password" id="pin-in" maxlength="4" placeholder="••••" style="width:140px;text-align:center;font-size:24px;letter-spacing:8px;border-radius:10px" onkeydown="if(event.key==='Enter')checkPin()">
+      <button class="btn btn-gold btn-sm" onclick="checkPin()">Entrar</button>
+    </div>`;
+    return;
+  }
+  const tabs=['Setup','Emparej.','Apuestas','Resultados','Datos'];
+  const keys=['setup','pairs','bets','results','data'];
+  let h=`<div class="admin-tabs">`;
+  tabs.forEach((t,i)=>h+=`<button class="admin-tab${asub===keys[i]?' active':''}" onclick="setAsub('${keys[i]}')">${t}</button>`);
+  h+='</div>';
+  switch(asub){
+    case 'setup': h+=adminSetup(); break;
+    case 'pairs': h+=adminPairs(); break;
+    case 'bets': h+=adminBets(); break;
+    case 'results': h+=adminResults(); break;
+    case 'data': h+=adminData(); break;
+  }
+  h+=`<div class="divider"></div><button class="btn btn-outline btn-sm" onclick="unlocked=false;renderAdmin()">🔒 Cerrar sesión</button>`;
+  el.innerHTML=h;
+}
+
+function checkPin(){
+  const v=document.getElementById('pin-in')?.value;
+  if(v===S.config.pin){unlocked=true;asub='setup';renderAdmin();}
+  else{toast('PIN incorrecto');const i=document.getElementById('pin-in');if(i){i.value='';i.focus();}}
+}
+function setAsub(s){asub=s;renderAdmin();}
+
+function adminSetup(){
+  const c=S.config;
+  return `<div class="card">
+    <div class="card-title">Estado del mercado</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:16px">
+      <button class="btn ${c.open?'btn-gold':'btn-outline'}" style="padding:10px 4px;font-size:11px;line-height:1.3" onclick="toggleOpen()">
+        ${c.open?'✅ Abiertos':'🔓 Abrir\nMercados'}
+      </button>
+      <button class="btn btn-outline" style="padding:10px 4px;font-size:11px;line-height:1.3;${c.closed?'border-color:var(--red);color:var(--red)':''}" onclick="toggleClosed()">
+        ${c.closed?'🔒 Cerrados':'🔒 Cerrar\nMercados'}
+      </button>
+      <button class="btn ${c.published?'btn-gold':'btn-outline'}" style="padding:10px 4px;font-size:11px;line-height:1.3" onclick="togglePublish()">
+        ${c.published?'📊 Publicados':'📊 Publicar\nResultados'}
+      </button>
+    </div>
+    <div style="font-size:11px;color:var(--gray);margin-bottom:16px">Sistema de cuotas: <strong style="color:var(--gold)">Pari-mutuel</strong> — el pozo se reparte proporcionalmente entre ganadores</div>
+    <div class="form-group">
+      <label class="form-label">Banco físico</label>
+      <input type="text" value="${c.bank}" oninput="S.config.bank=this.value;save()" placeholder="Nombre del banco">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Cambiar PIN (actual: ${c.pin})</label>
+      <div style="display:flex;gap:8px">
+        <input type="password" id="new-pin" maxlength="4" placeholder="Nuevo PIN (4 dígitos)" style="flex:1">
+        <button class="btn btn-outline btn-sm" onclick="changePin()">Cambiar</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+function toggleOpen(){S.config.open=!S.config.open;if(S.config.open)S.config.closed=false;save();renderAdmin();toast(S.config.open?'Mercados abiertos ✓':'Mercados cerrados');}
+function toggleClosed(){S.config.closed=!S.config.closed;if(S.config.closed)S.config.open=false;save();renderAdmin();}
+function togglePublish(){
+  if(!S.config.published){
+    const noRes=S.singles.filter(s=>s.loco&&s.lobo).some(s=>!s.winner);
+    if(noRes||S.finalResult===null){toast('Introduce primero todos los resultados');return;}
+  }
+  S.config.published=!S.config.published;save();renderAdmin();
+  toast(S.config.published?'Resultados publicados ✓':'Resultados ocultados');
+}
+function changePin(){
+  const v=document.getElementById('new-pin')?.value;
+  if(!v||v.length!==4||!/^\d{4}$/.test(v)){toast('PIN debe tener exactamente 4 dígitos');return;}
+  S.config.pin=v;save();toast('PIN actualizado ✓');renderAdmin();
+}
+
+function adminPairs(){
+  let h='<div class="card-title">Emparejamientos Singles (se anuncian sábado noche)</div>';
+  h+='<div style="font-size:11px;color:var(--gray);margin-bottom:12px">Asigna un jugador de cada equipo a cada partido. Cada jugador solo puede aparecer en un partido.</div>';
+  const usedL=S.singles.map(s=>s.loco).filter(Boolean);
+  const usedW=S.singles.map(s=>s.lobo).filter(Boolean);
+  S.singles.forEach((m,i)=>{
+    const avL=LOCOS.filter(p=>!usedL.includes(p)||p===m.loco);
+    const avW=LOBOS.filter(p=>!usedW.includes(p)||p===m.lobo);
+    h+=`<div class="match-card" style="margin-bottom:8px">
+      <div style="font-size:10px;color:var(--gray);font-weight:700;margin-bottom:8px">PARTIDO #${m.id}</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+        <select onchange="setPair(${i},'loco',this.value)" style="font-size:12px">
+          <option value="">— Loco —</option>
+          ${LOCOS.map(p=>`<option value="${p}"${m.loco===p?' selected':''}>${p}${!avL.includes(p)&&p!==m.loco?' ✗':''}</option>`).join('')}
+        </select>
+        <select onchange="setPair(${i},'lobo',this.value)" style="font-size:12px">
+          <option value="">— Lobo —</option>
+          ${LOBOS.map(p=>`<option value="${p}"${m.lobo===p?' selected':''}>${p}${!avW.includes(p)&&p!==m.lobo?' ✗':''}</option>`).join('')}
+        </select>
+      </div>
+      ${m.loco&&m.lobo?`<div style="margin-top:6px;text-align:center;font-size:12px"><span class="loco-text">${m.loco}</span> <span style="color:var(--gray)">vs</span> <span class="lobo-text">${m.lobo}</span></div>`:''}
+    </div>`;
+  });
+  const done=S.singles.filter(s=>s.loco&&s.lobo).length;
+  h+=`<div style="text-align:center;font-size:12px;color:var(--gray);margin-top:4px">${done}/10 partidos asignados</div>`;
+  return h;
+}
+function setPair(i,side,v){
+  S.singles[i][side]=v||null;
+  // Clear winner if pairing changes
+  S.singles[i].winner=null;
+  save();toast('Guardado ✓');renderAdmin();
+}
+
+function adminBets(){
+  let opts='<option value="">— Selecciona jugador —</option>';
+  opts+='<optgroup label="LOCOS">'+LOCOS.map(p=>`<option value="${p}">${p}  (${spent(p)}€/${MAX}€)</option>`).join('')+'</optgroup>';
+  opts+='<optgroup label="LOBOS">'+LOBOS.map(p=>`<option value="${p}">${p}  (${spent(p)}€/${MAX}€)</option>`).join('')+'</optgroup>';
+  let h=`<div class="form-group"><label class="form-label">Jugador</label>
+    <select id="bp" onchange="updBetForm()">${opts}</select>
+  </div><div id="bform"></div>`;
+  h+='<div class="divider"></div><div class="card-title">Apuestas registradas ('+S.bets.length+')</div>';
+  if(!S.bets.length) h+='<div style="text-align:center;color:var(--gray);font-size:12px;padding:20px">Sin apuestas</div>';
+  S.bets.forEach((b,i)=>{
+    const m=b.type==='singles'?S.singles.find(s=>s.id===b.matchId):null;
+    const desc=b.type==='singles'?`S#${b.matchId}: ${m?.loco||'?'} vs ${m?.lobo||'?'} → <strong>${b.pick}</strong>`:`Final → <strong>${b.pick}</strong>`;
+    h+=`<div class="match-card" style="margin-bottom:6px">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:8px">
+        <div style="flex:1;min-width:0">
+          <div style="font-weight:600">${b.bettor}</div>
+          <div style="font-size:11px;color:var(--gray)">${desc}</div>
+          <div style="font-size:10px;margin-top:2px;color:${b.cash?'var(--green)':'var(--gold)'}">${b.cash?'✓ Cash':'⏳ Cash pendiente'}</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:6px;flex-shrink:0">
+          <span style="font-family:'Bebas Neue',cursive;font-size:20px;color:var(--gold)">${b.amount}€</span>
+          <button class="icon-btn ${b.cash?'icon-btn-green':''}" onclick="toggleCash(${i})">${b.cash?'✓':'cash'}</button>
+          <button class="icon-btn icon-btn-red" onclick="delBet(${i})">✕</button>
+        </div>
+      </div>
+    </div>`;
+  });
+  return h;
+}
+
+function updBetForm(){
+  const p=document.getElementById('bp')?.value;
+  const area=document.getElementById('bform');
+  if(!area) return;
+  if(!p){area.innerHTML='';return;}
+  const rem=MAX-spent(p);
+  if(rem<=0){area.innerHTML=`<div style="color:var(--red);font-size:12px;padding:8px 0">Este jugador ya ha apostado ${MAX}€</div>`;return;}
+  if(!S.config.open){area.innerHTML=`<div style="color:var(--gold);font-size:12px;padding:8px 0">Los mercados aún no están abiertos</div>`;return;}
+  let mkts=`<option value="">— Mercado —</option><option value="final">🏁 Resultado Final de Edición</option>`;
+  S.singles.filter(s=>s.loco&&s.lobo).forEach(s=>mkts+=`<option value="s${s.id}">⛳ Singles #${s.id}: ${s.loco} vs ${s.lobo}</option>`);
+  area.innerHTML=`<div class="card">
+    <div style="font-size:12px;color:var(--gray);margin-bottom:12px">Disponible: <strong style="color:var(--gold)">${rem}€</strong></div>
+    <div class="form-group"><label class="form-label">Mercado</label>
+      <select id="btype" onchange="updPickOpts()">${mkts}</select>
+    </div>
+    <div id="bpick"></div>
+    <div class="form-group"><label class="form-label">Importe (€)</label>
+      <div class="amount-row">
+        <div class="amount-step" onclick="stepAmt(-1)">−</div>
+        <input type="number" id="bamt" min="1" max="${rem}" value="${Math.min(5,rem)}" step="1" oninput="showLiveOdds()">
+        <div class="amount-step" onclick="stepAmt(1)">+</div>
+      </div>
+    </div>
+    <div id="live-odds"></div>
+    <div class="check-row"><input type="checkbox" id="bcash" checked><label class="check-label" for="bcash">Dinero entregado físicamente ✓</label></div>
+    <button class="btn btn-gold" style="margin-top:10px" onclick="addBet()">Registrar apuesta</button>
+  </div>`;
+}
+
+function updPickOpts(){
+  const t=document.getElementById('btype')?.value;
+  const area=document.getElementById('bpick');
+  if(!area) return;
+  pick=null;
+  if(!t){area.innerHTML='';return;}
+  if(t==='final'){
+    area.innerHTML=`<div class="form-group"><label class="form-label">Apuesta a</label>
+      <div class="toggle-group">
+        <div class="toggle-btn" id="pk-locos" onclick="setPick('locos')">🔴 Locos ganan</div>
+        <div class="toggle-btn" id="pk-lobos" onclick="setPick('lobos')">🔵 Lobos ganan/retienen</div>
+      </div></div>`;
+  } else {
+    const id=parseInt(t.slice(1));
+    const m=S.singles.find(s=>s.id===id);
+    area.innerHTML=`<div class="form-group"><label class="form-label">Apuesta a</label>
+      <div class="toggle-group">
+        <div class="toggle-btn" id="pk-loco" onclick="setPick('loco')">🔴 ${m.loco}</div>
+        <div class="toggle-btn" id="pk-lobo" onclick="setPick('lobo')">🔵 ${m.lobo}</div>
+      </div></div>`;
+  }
+}
+
+function setPick(v){
+  pick=v;
+  document.querySelectorAll('#bpick .toggle-btn').forEach(b=>b.className='toggle-btn');
+  const el=document.getElementById('pk-'+v);
+  if(el) el.classList.add('sel-'+v);
+  showLiveOdds();
+}
+
+function showLiveOdds(){
+  const area=document.getElementById('live-odds');
+  if(!area) return;
+  const t=document.getElementById('btype')?.value;
+  const amt=parseInt(document.getElementById('bamt')?.value)||0;
+  if(!t||!pick||!amt){area.innerHTML='';return;}
+
+  const isF=t==='final';
+  const matchId=isF?null:parseInt(t.slice(1));
+  const bets=isF?finalBets():matchBets(matchId);
+  const sides=isF?['locos','lobos']:['loco','lobo'];
+  const labels=isF?['Locos ganan','Lobos ganan/retienen']:
+    (()=>{const m=S.singles.find(s=>s.id===matchId);return[m.loco,m.lobo];})();
+  const colors=['var(--locos)','var(--lobos)'];
+  const dimColors=['var(--locos-dim)','var(--lobos-dim)'];
+
+  const pools=sides.map(s=>bets.filter(b=>b.pick===s).reduce((sum,b)=>sum+b.amount,0));
+  const curTotal=pools[0]+pools[1];
+  const myIdx=sides.indexOf(pick);
+  const otherIdx=1-myIdx;
+
+  const newMyPool=pools[myIdx]+amt;
+  const newTotal=curTotal+amt;
+
+  const myOdds=newMyPool>0?newTotal/newMyPool:1;
+  const otherOdds=pools[otherIdx]>0?newTotal/pools[otherIdx]:null;
+  const gross=amt*myOdds;
+  const net=gross-amt;
+
+  area.innerHTML=`<div style="background:var(--surface2);border:1px solid var(--gold-dim);border-radius:10px;padding:12px;margin-bottom:14px">
+    <div style="font-size:10px;color:var(--gold);font-weight:700;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px">📊 Cuota pari-mutuel · en tiempo real</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px">
+      ${[0,1].map(i=>{
+        const isMe=i===myIdx;
+        const pool=i===myIdx?newMyPool:pools[i];
+        const odds=pool>0?newTotal/pool:null;
+        return `<div style="text-align:center;padding:8px;background:${isMe?dimColors[i]:'var(--surface)'};border:1px solid ${isMe?colors[i]:'var(--border)'};border-radius:8px">
+          <div style="font-size:9px;color:var(--gray);margin-bottom:3px">${labels[i]}</div>
+          <div style="font-family:'Bebas Neue',cursive;font-size:24px;color:${isMe?colors[i]:'var(--gray)'}">${odds?'×'+odds.toFixed(2):'—'}</div>
+          <div style="font-size:9px;color:var(--gray)">${isMe?`${pools[i]}+${amt}`:`${pools[i]}`}€</div>
+        </div>`;
+      }).join('')}
+    </div>
+    <div style="background:var(--gold-dim);border:1px solid var(--gold);border-radius:8px;padding:10px;text-align:center">
+      <div style="font-size:11px;color:var(--gray);margin-bottom:4px">
+        Si apuestas <strong style="color:var(--white)">${amt}€</strong> a <strong style="color:${colors[myIdx]}">${labels[myIdx]}</strong>
+        ${curTotal===0?'<span style="font-size:10px;color:var(--gray)"> (primera apuesta al mercado)</span>':''}
+      </div>
+      <div style="display:flex;justify-content:center;gap:16px;flex-wrap:wrap">
+        <div><span style="font-size:10px;color:var(--gray)">Cuota </span><span style="font-family:'Bebas Neue',cursive;font-size:20px;color:var(--gold)">×${myOdds.toFixed(2)}</span></div>
+        <div><span style="font-size:10px;color:var(--gray)">Retorno </span><span style="font-family:'Bebas Neue',cursive;font-size:20px;color:var(--gold)">${gross.toFixed(2)}€</span></div>
+        <div><span style="font-size:10px;color:var(--gray)">Beneficio </span><span style="font-family:'Bebas Neue',cursive;font-size:20px;color:${net>0?'var(--green)':'var(--gray)'}">+${net.toFixed(2)}€</span></div>
+      </div>
+      ${curTotal>0?`<div style="font-size:10px;color:var(--gray);margin-top:6px">⚠️ La cuota cambiará si otros apuestan después</div>`:''}
+    </div>
+  </div>`;
+}
+
+function stepAmt(d){
+  const el=document.getElementById('bamt'); if(!el) return;
+  el.value=Math.max(1,Math.min(parseInt(el.max)||MAX,parseInt(el.value||0)+d));
+  showLiveOdds();
+}
+
+function addBet(){
+  const p=document.getElementById('bp')?.value;
+  const t=document.getElementById('btype')?.value;
+  const amt=parseInt(document.getElementById('bamt')?.value);
+  const cash=document.getElementById('bcash')?.checked;
+  if(!p){toast('Selecciona un jugador');return;}
+  if(!t){toast('Selecciona un mercado');return;}
+  if(!pick){toast('Selecciona a quién apuestas');return;}
+  if(!amt||amt<1){toast('Importe inválido');return;}
+  if(spent(p)+amt>MAX){toast(`Superarías el máximo de ${MAX}€`);return;}
+  S.bets.push({id:Date.now(),bettor:p,type:t==='final'?'final':'singles',matchId:t!=='final'?parseInt(t.slice(1)):null,pick,amount:amt,cash:cash||false,ts:new Date().toISOString()});
+  save(); pick=null; toast(`Apuesta registrada ✓`); renderAdmin();
+}
+
+function toggleCash(i){S.bets[i].cash=!S.bets[i].cash;save();renderAdmin();}
+
+function delBet(i){
+  if(!confirm(`¿Eliminar apuesta de ${S.bets[i].bettor}?`)) return;
+  S.bets.splice(i,1); save(); renderAdmin(); toast('Eliminada');
+}
+
+function adminResults(){
+  let h=`<div class="card-title">Resultado Final de Edición</div>
+    <div class="toggle-group" style="margin-bottom:16px">
+      <div class="toggle-btn${S.finalResult==='locos'?' sel-locos':''}" onclick="setFinal('locos')">🔴 Locos ganaron</div>
+      <div class="toggle-btn${S.finalResult==='lobos'?' sel-lobos':''}" onclick="setFinal('lobos')">🔵 Lobos ganaron/retuvieron</div>
+    </div>
+    <div class="card-title">Resultados Singles</div>`;
+  S.singles.forEach((m,i)=>{
+    if(!m.loco||!m.lobo){h+=`<div style="font-size:11px;color:var(--gray);padding:6px 0">Partido #${m.id}: sin emparejamiento</div>`;return;}
+    h+=`<div class="match-card" style="margin-bottom:8px">
+      <div style="font-size:10px;color:var(--gray);font-weight:700;margin-bottom:6px">PARTIDO #${m.id}</div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+        <span class="loco-text" style="font-weight:600">${m.loco}</span>
+        <span style="color:var(--gray);font-size:11px">vs</span>
+        <span class="lobo-text" style="font-weight:600">${m.lobo}</span>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px">
+        <button class="toggle-btn${m.winner==='loco'?' sel-locos':''}" onclick="setSRes(${i},'loco')" style="font-size:11px;padding:8px">🔴 ${m.loco}</button>
+        <button class="toggle-btn${m.winner==='empate'?' sel-gold':''}" onclick="setSRes(${i},'empate')" style="font-size:11px;padding:8px">⚖️ Empate</button>
+        <button class="toggle-btn${m.winner==='lobo'?' sel-lobos':''}" onclick="setSRes(${i},'lobo')" style="font-size:11px;padding:8px">🔵 ${m.lobo}</button>
+      </div>
+    </div>`;
+  });
+  const done=S.singles.filter(s=>s.loco&&s.lobo&&s.winner).length;
+  const total=S.singles.filter(s=>s.loco&&s.lobo).length;
+  h+=`<div style="text-align:center;font-size:12px;color:var(--gray);margin-top:8px">${done}/${total} resultados · Final: ${S.finalResult||'pendiente'}</div>`;
+  return h;
+}
+function setFinal(v){S.finalResult=v;save();renderAdmin();toast(`Final: ${v==='locos'?'Locos':'Lobos'} ganaron ✓`);}
+function setSRes(i,w){S.singles[i].winner=w;save();renderAdmin();toast(`Partido #${i+1}: ${w==='empate'?'Empate (push)':w==='loco'?S.singles[i].loco+' ganó':S.singles[i].lobo+' ganó'} ✓`);}
+
+function adminData(){
+  const tot=S.bets.reduce((s,b)=>s+b.amount,0);
+  return `<div class="card" style="margin-bottom:12px">
+    <div style="font-size:12px;color:var(--gray)">Apuestas: <strong>${S.bets.length}</strong> · Pozo total: <strong style="color:var(--gold)">${tot}€</strong></div>
+  </div>
+  <div class="form-group"><button class="btn btn-outline" onclick="exportJSON()">📥 Exportar JSON</button></div>
+  <div class="form-group">
+    <label class="form-label">Importar JSON</label>
+    <input type="file" accept=".json" onchange="importJSON(this.files[0])" style="font-size:12px;padding:8px;border:1px solid var(--border);border-radius:8px;width:100%;background:var(--surface2);color:var(--gray)">
+  </div>
+  <div class="divider"></div>
+  <button class="btn btn-danger" onclick="resetAll()">⚠️ Resetear todos los datos</button>`;
+}
+function resetAll(){
+  if(!confirm('¿Resetear TODOS los datos? No se puede deshacer.')) return;
+  if(!confirm('Confirma: se perderán todas las apuestas y resultados.')) return;
+  localStorage.removeItem(KEY); location.reload();
+}
+
+// ── PLAYER STATS ──────────────────────────────────────────────────────────
+const STATS = {
+  // LOBOS — historial completo
+  'Fertxo':  { ed:12, pct:41.7, hcpE:16.1, hcpJ:19 },
+  'Jaki':    { ed:13, pct:56.7, hcpE:11.4, hcpJ:14 },
+  'Jido':    { ed:13, pct:54.8, hcpE:11.5, hcpJ:14 },
+  'Juan':    { ed:13, pct:63.5, hcpE:9.0,  hcpJ:11 },
+  'Diego':   { ed:12, pct:47.9, hcpE:23.7, hcpJ:28 },
+  'Gupi':    { ed:5,  pct:62.5, hcpE:26.9, hcpJ:32 },
+  'Herrero': { ed:5,  pct:67.5, hcpE:15.7, hcpJ:19 },
+  'Pedro':   { ed:12, pct:49.0, hcpE:9.4,  hcpJ:12 },
+  'Nacho':   { ed:11, pct:22.7, hcpE:21.7, hcpJ:26 },
+  'Otegui':  { ed:0,  pct:null, hcpE:12.2, hcpJ:15 },
+  // LOCOS — stats pendientes de añadir
+  'Alon':     { ed:null, pct:null, hcpE:12.1, hcpJ:15 },
+  'Béjar':    { ed:null, pct:null, hcpE:14.6, hcpJ:18 },
+  'Blasfi':   { ed:null, pct:null, hcpE:8.7,  hcpJ:11 },
+  'Bugo':     { ed:null, pct:null, hcpE:9.1,  hcpJ:11 },
+  'Agus':     { ed:null, pct:null, hcpE:23.6, hcpJ:28 },
+  'Nico':     { ed:null, pct:null, hcpE:6.8,  hcpJ:9  },
+  'Castejas': { ed:null, pct:null, hcpE:16.4, hcpJ:20 },
+  'Juanma':   { ed:null, pct:null, hcpE:18.8, hcpJ:23 },
+  'Merello':  { ed:null, pct:null, hcpE:36.0, hcpJ:43 },
+  'Prieto':   { ed:null, pct:null, hcpE:11.4, hcpJ:14 },
+};
+
+function pctColor(pct){
+  if(pct===null) return 'var(--gray)';
+  if(pct>=60) return 'var(--green)';
+  if(pct>=50) return '#86efac';
+  if(pct>=40) return 'var(--gold)';
+  return 'var(--red)';
+}
+
+function pctBar(pct){
+  if(pct===null) return '';
+  const w=Math.round(pct); const c=pctColor(pct);
+  return `<div style="background:var(--border);border-radius:4px;height:4px;margin-top:4px;overflow:hidden">
+    <div style="height:100%;width:${w}%;background:${c};border-radius:4px"></div>
+  </div>`;
+}
+
+function playerStatCard(apodo, teamColor){
+  const st=STATS[apodo]||{};
+  const pct=st.pct; const ed=st.ed;
+  const noHistory=ed===null;
+  return `<div style="flex:1;min-width:0">
+    <div style="font-size:14px;font-weight:700;color:${teamColor}">${apodo}</div>
+    <div style="font-size:10px;color:var(--gray)">Hcp ${st.hcpE||'?'} · Juego ${st.hcpJ||'?'}</div>
+    ${noHistory
+      ? `<div style="font-size:10px;color:var(--gray);margin-top:3px">Sin historial</div>`
+      : ed===0
+        ? `<div style="font-size:10px;color:var(--gold);margin-top:3px">Nueva incorporación</div>`
+        : `<div style="display:flex;align-items:center;gap:6px;margin-top:4px">
+            <span style="font-size:13px;font-weight:700;color:${pctColor(pct)}">${pct}%</span>
+            <span style="font-size:10px;color:var(--gray)">${ed} ed.</span>
+           </div>
+           ${pctBar(pct)}`
+    }
+  </div>`;
+}
+
+// Reads Saturday scores from index.html's localStorage (rcp14_state)
+function getSatScores(){
+  try{
+    const raw=localStorage.getItem('rcp14_state');
+    if(!raw) return null;
+    const idx=JSON.parse(raw);
+    const pts=(r,max)=>{
+      if(!r) return [null,null];
+      if(r==='W') return [max,0];
+      if(r==='L') return [0,max];
+      if(r==='H') return [max/2,max/2];
+      return [null,null];
+    };
+    let fsL=0,fsLo=0,fbL=0,fbLo=0,hasFS=false,hasFB=false;
+    (idx.results_fs||[]).forEach(r=>{const[a,b]=pts(r,0.5);if(a!==null){fsL+=a;fsLo+=b;hasFS=true;}});
+    (idx.results_fb||[]).forEach(r=>{const[a,b]=pts(r,0.5);if(a!==null){fbL+=a;fbLo+=b;hasFB=true;}});
+    if(!hasFS&&!hasFB) return null;
+    return{fsL,fsLo,fbL,fbLo,parL:fsL+fbL,parLo:fsLo+fbLo,hasFS,hasFB};
+  }catch(e){return null;}
+}
+
+// ── TAB: SINGLES ───────────────────────────────────────────────────────────
+function renderSingles(){
+  const el=document.getElementById('singles-content');
+  let h='';
+
+  // Saturday scoreboard
+  const sat=getSatScores();
+  if(sat){
+    const adv=sat.parL>sat.parLo?'Locos':'Lobos';
+    const tied=sat.parL===sat.parLo;
+    const advColor=tied?'var(--gold)':adv==='Locos'?'var(--locos)':'var(--lobos)';
+    h+=`<div class="card" style="margin-bottom:16px;border-color:${advColor}">
+      <div class="card-title">Marcador Sábado</div>
+      <div style="margin-bottom:10px">
+        ${sat.hasFS?`<div class="row" style="padding:7px 0;font-size:12px"><span style="color:var(--gray)">Foursomes</span>
+          <span><span class="loco-text" style="font-weight:700">${sat.fsL}</span><span style="color:var(--gray)"> – </span><span class="lobo-text" style="font-weight:700">${sat.fsLo}</span></span></div>`:''}
+        ${sat.hasFB?`<div class="row" style="padding:7px 0;font-size:12px"><span style="color:var(--gray)">Fourball</span>
+          <span><span class="loco-text" style="font-weight:700">${sat.fbL}</span><span style="color:var(--gray)"> – </span><span class="lobo-text" style="font-weight:700">${sat.fbLo}</span></span></div>`:''}
+      </div>
+      <div style="text-align:center;background:var(--surface2);border-radius:8px;padding:10px">
+        <div style="font-size:10px;color:var(--gray);margin-bottom:4px;text-transform:uppercase;letter-spacing:1px">Parcial Sábado</div>
+        <div style="font-family:'Bebas Neue',cursive;font-size:28px">
+          <span style="color:var(--locos)">${sat.parL}</span>
+          <span style="color:var(--gray);font-size:18px"> – </span>
+          <span style="color:var(--lobos)">${sat.parLo}</span>
+        </div>
+        <div style="font-size:11px;margin-top:4px;color:${advColor};font-weight:600">
+          ${tied?'Empatados — todo se decide en los Singles':adv+' van por delante · Necesitan los Singles'}
+        </div>
+        <div style="font-size:10px;color:var(--gray);margin-top:2px">
+          Para ganar: >7.5 pts · Lobos retienen con empate 7.5–7.5
+        </div>
+      </div>
+    </div>`;
+  } else {
+    h+=`<div class="card" style="margin-bottom:16px;border-style:dashed">
+      <div class="card-title">Marcador Sábado</div>
+      <div style="font-size:12px;color:var(--gray);text-align:center;padding:8px 0">
+        Disponible automáticamente cuando el admin introduzca<br>los resultados del sábado en la app principal
+      </div>
+    </div>`;
+  }
+
+  // Singles pairings
+  const configured=S.singles.filter(s=>s.loco&&s.lobo);
+  if(!configured.length){
+    h+=`<div class="empty"><div class="empty-icon">📋</div>Emparejamientos por anunciar<br><span style="font-size:11px">El admin los configura en Admin → Emparej. el sábado noche</span></div>`;
+    el.innerHTML=h; return;
+  }
+
+  h+=`<div class="card-title">Emparejamientos Singles · Domingo</div>`;
+
+  configured.forEach(m=>{
+    const bets=matchBets(m.id);
+    const locoPool=bets.filter(b=>b.pick==='loco').reduce((s,b)=>s+b.amount,0);
+    const loboPool=bets.filter(b=>b.pick==='lobo').reduce((s,b)=>s+b.amount,0);
+    const tot=locoPool+loboPool;
+    const locoOdds=locoPool&&tot?'×'+(tot/locoPool).toFixed(2):'—';
+    const loboOdds=loboPool&&tot?'×'+(tot/loboPool).toFixed(2):'—';
+
+    let resultBadge='';
+    if(m.winner){
+      if(m.winner==='empate') resultBadge=`<div style="text-align:center;margin-top:8px"><span class="badge badge-gray">⚖️ Empate · Push</span></div>`;
+      else if(m.winner==='loco') resultBadge=`<div style="text-align:center;margin-top:8px"><span class="badge badge-locos">✓ ${m.loco} ganó</span></div>`;
+      else resultBadge=`<div style="text-align:center;margin-top:8px"><span class="badge badge-lobos">✓ ${m.lobo} ganó</span></div>`;
+    }
+
+    h+=`<div class="match-card" style="margin-bottom:10px">
+      <div style="font-size:10px;color:var(--gray);font-weight:700;margin-bottom:10px;letter-spacing:0.5px">PARTIDO #${m.id}</div>
+      <div style="display:grid;grid-template-columns:1fr 28px 1fr;gap:6px;align-items:start">
+        ${playerStatCard(m.loco,'var(--locos)')}
+        <div style="text-align:center;padding-top:4px;font-size:10px;color:var(--gray)">vs</div>
+        <div style="text-align:right">${playerStatCard(m.lobo,'var(--lobos)').replace('flex:1','flex:1;text-align:right').replace('display:flex;align-items:center;gap:6px','display:flex;align-items:center;gap:6px;justify-content:flex-end')}</div>
+      </div>
+      ${tot>0?`<div style="display:grid;grid-template-columns:1fr auto 1fr;gap:6px;align-items:center;margin-top:10px;padding-top:10px;border-top:1px solid var(--border)">
+        <div class="odds-box"><div class="odds-num" style="color:var(--locos)">${locoPool}€</div><div class="odds-label">${locoOdds}</div></div>
+        <div style="font-size:9px;color:var(--gray);text-align:center">POZO<br>${tot}€</div>
+        <div class="odds-box"><div class="odds-num" style="color:var(--lobos)">${loboPool}€</div><div class="odds-label">${loboOdds}</div></div>
+      </div>`:`<div style="font-size:10px;color:var(--gray);text-align:center;padding-top:8px;border-top:1px solid var(--border);margin-top:8px">Sin apuestas aún en este partido</div>`}
+      ${resultBadge}
+    </div>`;
+  });
+
+  // Legend
+  h+=`<div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px;margin-top:4px">
+    <div class="card-title">Leyenda — % WIN histórico</div>
+    <div style="display:flex;flex-direction:column;gap:6px;font-size:11px">
+      <div style="display:flex;align-items:center;gap:8px"><div style="width:30px;height:4px;border-radius:2px;background:var(--green)"></div><span style="color:var(--gray)">≥ 60% — Muy buena racha</span></div>
+      <div style="display:flex;align-items:center;gap:8px"><div style="width:30px;height:4px;border-radius:2px;background:#86efac"></div><span style="color:var(--gray)">50–60% — Por encima del 50%</span></div>
+      <div style="display:flex;align-items:center;gap:8px"><div style="width:30px;height:4px;border-radius:2px;background:var(--gold)"></div><span style="color:var(--gray)">40–50% — En la media</span></div>
+      <div style="display:flex;align-items:center;gap:8px"><div style="width:30px;height:4px;border-radius:2px;background:var(--red)"></div><span style="color:var(--gray)">< 40% — Por debajo de la media</span></div>
+    </div>
+    <div style="font-size:10px;color:var(--gray);margin-top:8px;padding-top:8px;border-top:1px solid var(--border)">* Stats Locos pendientes de añadir · Se actualizan automáticamente</div>
+  </div>`;
+
+  el.innerHTML=h;
+}
+
+// ── INIT ──────────────────────────────────────────────────────────────────
+load();
+render();
+</script>
+</body>
+</html>

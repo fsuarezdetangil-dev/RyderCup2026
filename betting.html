@@ -432,9 +432,11 @@ function calcMarket(bets, winner, empate) {
   if(empate) return bets.map(b=>({...b,net:0,gross:b.amount}));
   const wb=bets.filter(b=>b.pick===winner);
   const lb=bets.filter(b=>b.pick!==winner);
+  // Nobody bet on the winning side → push everyone (refund), pot stays intact
+  if(!wb.length) return bets.map(b=>({...b,net:0,gross:b.amount}));
   const tot=bets.reduce((s,b)=>s+b.amount,0);
   const wp=wb.reduce((s,b)=>s+b.amount,0);
-  return [...wb.map(b=>{const g=wp?(b.amount/wp)*tot:b.amount;return{...b,gross:g,net:g-b.amount};}),
+  return [...wb.map(b=>{const g=(b.amount/wp)*tot;return{...b,gross:g,net:g-b.amount};}),
           ...lb.map(b=>({...b,gross:0,net:-b.amount}))];
 }
 

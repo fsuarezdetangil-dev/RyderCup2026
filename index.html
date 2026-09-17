@@ -1039,24 +1039,7 @@ body {
       </div>
     </div>
 
-    <!-- P6: Menú -->
-    <div class="yo-card">
-      <h3>6. Menú Cena Sábado — Los Berengueles</h3>
-      <div class="radio-opt">
-        <input type="radio" name="menu" id="m1" value="Carne" onchange="savePrefs()">
-        <label for="m1">Carne</label>
-      </div>
-      <div class="radio-opt">
-        <input type="radio" name="menu" id="m2" value="Pescado" onchange="savePrefs()">
-        <label for="m2">Pescado</label>
-      </div>
-      <div class="radio-opt">
-        <input type="radio" name="menu" id="m3" value="Vegetariano" onchange="savePrefs()">
-        <label for="m3">Vegetariano</label>
-      </div>
-    </div>
-
-    <a class="wa-btn disabled" id="wa-btn" href="#" target="_blank" onclick="return handleWA(event)">
+    < class="wa-btn disabled" id="wa-btn" href="#" target="_blank" onclick="return handleWA(event)">
       Enviar por WhatsApp
     </a>
     <div style="height:8px;"></div>
@@ -1203,7 +1186,7 @@ const PANELS = {
       </div>
       <div class="panel-section">
         <h4>Importante</h4>
-        <p>⏰ Punto de encuentro a las <strong style="color:var(--gold)">19:50h</strong> en la puerta. Puntualidad importante — máx. 80 personas por sesión. Duración ~1 hora.</p>
+        <p>⏰ Punto de encuentro a las <strong style="color:var(--gold)">19:50h</strong> en la puerta. Puntualidad importante. Duración ~1 hora.</p>
       </div>
       <div class="panel-section">
         <a href="https://mezquita-catedraldecordoba.es" target="_blank" class="maps-link">🌐 Web oficial</a>
@@ -1343,9 +1326,8 @@ const PANELS = {
       </div>
       <div class="panel-section">
         <h4>Tipo</h4>
-        <p>Cocina cordobesa tradicional · Menú: carne / pescado / vegetariana</p>
-      </div>
-      <div class="note-gold">Indica tu preferencia de menú en la sección "Yo"</div>`
+        <p>Cocina cordobesa tradicional</p>
+      </div>`
   },
   'desayuno-dom': {
     time: 'Hasta 10:00',
@@ -1588,7 +1570,6 @@ function loadPrefs() {
     if (prefs.bebidas) prefs.bebidas.forEach(v => { const el = document.querySelector(`[value="${v}"]`); if(el) el.checked=true; });
     if (prefs.avit_sab) document.querySelectorAll('[name="avit-sab"]').forEach(r => { if(r.value===prefs.avit_sab) r.checked=true; });
     if (prefs.avit_dom) document.querySelectorAll('[name="avit-dom"]').forEach(r => { if(r.value===prefs.avit_dom) r.checked=true; });
-    if (prefs.menu) document.querySelectorAll('[name="menu"]').forEach(r => { if(r.value===prefs.menu) r.checked=true; });
   } catch(e){}
   updateProgress();
 }
@@ -1606,7 +1587,6 @@ function savePrefs() {
     bebidas,
     avit_sab: (document.querySelector('[name="avit-sab"]:checked')||{}).value || '',
     avit_dom: (document.querySelector('[name="avit-dom"]:checked')||{}).value || '',
-    menu: (document.querySelector('[name="menu"]:checked')||{}).value || '',
   };
   try { localStorage.setItem('rcp14_prefs_' + name, JSON.stringify(prefs)); } catch(e){}
   updateProgress();
@@ -1624,11 +1604,10 @@ function updateProgress() {
     document.querySelectorAll('[type="checkbox"]:checked').length > 0,
     !!document.querySelector('[name="avit-sab"]:checked'),
     !!document.querySelector('[name="avit-dom"]:checked'),
-    !!document.querySelector('[name="menu"]:checked'),
   ];
   const done = checks.filter(Boolean).length;
-  document.getElementById('yo-progress').textContent = `${done} de 6 preferencias completadas`;
-  document.getElementById('yo-bar').style.width = (done/6*100) + '%';
+  document.getElementById('yo-progress').textContent = `${done} de 5 preferencias completadas`;
+  document.getElementById('yo-bar').style.width = (done/5*100) + '%';
   const waBtn = document.getElementById('wa-btn');
   const hasName = !!document.getElementById('yo-name').value;
   waBtn.classList.toggle('disabled', !hasName);
@@ -1642,7 +1621,7 @@ function onNameChange() {
 }
 
 function clearYoForm() {
-  document.querySelectorAll('[name="greenfee"],[name="mezquita"],[name="avit-sab"],[name="avit-dom"],[name="menu"]').forEach(r=>r.checked=false);
+  document.querySelectorAll('[name="greenfee"],[name="mezquita"],[name="avit-sab"],[name="avit-dom"]').forEach(r=>r.checked=false);
   document.querySelectorAll('[type="checkbox"]').forEach(c=>c.checked=false);
   document.getElementById('gf-time-jueves').style.display='none';
   document.getElementById('gf-time-viernes').style.display='none';
@@ -1661,7 +1640,6 @@ function handleWA(e) {
   const bebs = Array.from(document.querySelectorAll('[type="checkbox"]:checked')).map(c=>c.value).join(', ') || 'Sin indicar';
   const as = (document.querySelector('[name="avit-sab"]:checked')||{}).value || 'Sin indicar';
   const ad = (document.querySelector('[name="avit-dom"]:checked')||{}).value || 'Sin indicar';
-  const men = (document.querySelector('[name="menu"]:checked')||{}).value || 'Sin indicar';
 
   const msg = `🏌️ RYDER CUP CÓRDOBA XIV — Preferencias de ${name}
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -1670,7 +1648,6 @@ function handleWA(e) {
 🍾 Bebidas cena viernes: ${bebs}
 🥪 Avituallamiento sábado: ${as}
 🥪 Avituallamiento domingo: ${ad}
-🍽️ Menú cena sábado: ${men}
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━`;
 
   const url = 'https://wa.me/34681637862?text=' + encodeURIComponent(msg);

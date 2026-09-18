@@ -432,8 +432,10 @@ function calcMarket(bets, winner, empate) {
   if(empate) return bets.map(b=>({...b,net:0,gross:b.amount}));
   const wb=bets.filter(b=>b.pick===winner);
   const lb=bets.filter(b=>b.pick!==winner);
-  // Nobody bet on the winning side → push everyone (refund), pot stays intact
-  if(!wb.length) return bets.map(b=>({...b,net:0,gross:b.amount}));
+  // Desierta: nadie apostó al lado ganador → losers pierden, banca se queda el pozo
+  if(!wb.length) return lb.map(b=>({...b,gross:0,net:-b.amount,banca:true}));
+  // Desierta: nadie apostó al lado perdedor → winners recuperan su apuesta (push)
+  if(!lb.length) return wb.map(b=>({...b,gross:b.amount,net:0}));
   const tot=bets.reduce((s,b)=>s+b.amount,0);
   const wp=wb.reduce((s,b)=>s+b.amount,0);
   return [...wb.map(b=>{const g=(b.amount/wp)*tot;return{...b,gross:g,net:g-b.amount};}),
@@ -443,15 +445,18 @@ function calcMarket(bets, winner, empate) {
 function calcAll() {
   const net={};
   ALL.forEach(p=>net[p]=0);
+  let bancaTotal=0;
+  const addRes=res=>{
+    res.forEach(p=>{if(net[p.bettor]!==undefined)net[p.bettor]+=p.net;});
+    if(res.length && res[0].banca) bancaTotal+=res.reduce((s,r)=>s+Math.abs(r.net),0);
+  };
   S.singles.forEach(m=>{
     if(!m.winner) return;
     const bets=matchBets(m.id); if(!bets.length) return;
-    calcMarket(bets,m.winner,m.winner==='empate').forEach(p=>{if(net[p.bettor]!==undefined)net[p.bettor]+=p.net;});
+    addRes(calcMarket(bets,m.winner,m.winner==='empate'));
   });
-  if(S.finalResult){
-    calcMarket(finalBets(),S.finalResult,false).forEach(p=>{if(net[p.bettor]!==undefined)net[p.bettor]+=p.net;});
-  }
-  return net;
+  if(S.finalResult) addRes(calcMarket(finalBets(),S.finalResult,false));
+  return {net, bancaTotal};
 }
 
 // ── TOAST ──────────────────────────────────────────────────────────────────
@@ -547,7 +552,7 @@ function renderMis(){
     });
   }
   if(S.config.published){
-    const nets=calcAll(); const n=nets[me]||0;
+    const {net:nets}=calcAll(); const n=nets[me]||0;
     const cls=n>0?'net-positive':n<0?'net-negative':'net-zero';
     const sign=n>0?'+':'';
     h+=`<div class="card" style="margin-top:8px;text-align:center">
@@ -646,10 +651,18 @@ function renderResultados(){
     el.innerHTML=`<div class="empty"><div class="empty-icon">⏳</div>Resultados no disponibles aún<br><span style="font-size:11px">El admin los publicará tras el torneo del domingo</span></div>`;
     return;
   }
-  const nets=calcAll();
+  const {net:nets, bancaTotal}=calcAll();
   const players=ALL.filter(p=>nets[p]!==0||myBets(p).length>0).sort((a,b)=>nets[b]-nets[a]);
   const oddsLbl=S.config.oddsType==='fixed'?'Cuotas fijas 1:1':'Sistema pari-mutuel';
   let h=`<div class="card" style="text-align:center;margin-bottom:16px"><div style="font-size:11px;color:var(--gray)">${oddsLbl} · Banco: <strong>${S.config.bank}</strong></div></div>`;
+  // Banca desierta notice
+  if(bancaTotal>0){
+    h+=`<div class="match-card" style="margin-bottom:12px;border-left:3px solid var(--gold)">
+      <div style="font-size:10px;font-weight:700;color:var(--gold);margin-bottom:4px">⚠️ APUESTA DESIERTA — BANCA</div>
+      <div style="font-size:12px">Hay mercados en los que nadie apostó al lado ganador. El pozo queda para <strong>${S.config.bank}</strong> (destinado a Loterías del Estado / futuras Ryders).</div>
+      <div style="margin-top:8px;font-family:'Bebas Neue',cursive;font-size:22px;color:var(--gold)">${S.config.bank} retiene: ${bancaTotal.toFixed(2)}€</div>
+    </div>`;
+  }
   // Ranking
   h+='<div class="card-title">Ranking de saldos</div>';
   players.forEach((p,i)=>{
@@ -657,7 +670,6 @@ function renderResultados(){
     const cls=n>0?'net-positive':n<0?'net-negative':'net-zero';
     const sign=n>0?'+':'';
     const t=team(p);
-    const medal=[n>0?'🥇':'',...[n>0?'🥈':''],...[n>0?'🥉':''],...['']].slice(0,1)[i<3&&n>0?i:3]||'';
     h+=`<div class="match-card" style="margin-bottom:6px">
       <div style="display:flex;align-items:center;justify-content:space-between">
         <div style="display:flex;align-items:center;gap:10px">
@@ -674,14 +686,18 @@ function renderResultados(){
   // Payers / receivers
   const payers=players.filter(p=>nets[p]<0);
   const receivers=players.filter(p=>nets[p]>0);
-  if(payers.length||receivers.length){
+  if(payers.length||receivers.length||bancaTotal>0){
     h+=`<div class="divider"></div><div class="card-title">Liquidación vía ${S.config.bank}</div><div class="card">`;
     if(payers.length){
       h+=`<div style="font-size:10px;font-weight:700;color:var(--red);margin-bottom:8px">PAGAN A ${S.config.bank.toUpperCase()}</div>`;
       payers.forEach(p=>{h+=`<div class="row"><span>${p}</span><span class="net-negative">${nets[p].toFixed(2)}€</span></div>`;});
     }
+    if(bancaTotal>0){
+      h+=`<div style="font-size:10px;font-weight:700;color:var(--gold);margin-top:${payers.length?12:0}px;margin-bottom:8px">RETIENE LA BANCA (APUESTA DESIERTA)</div>`;
+      h+=`<div class="row"><span>🎟️ ${S.config.bank} → Loterías / futuras Ryders</span><span style="color:var(--gold);font-weight:700">${bancaTotal.toFixed(2)}€</span></div>`;
+    }
     if(receivers.length){
-      h+=`<div style="font-size:10px;font-weight:700;color:var(--green);margin-top:${payers.length?12:0}px;margin-bottom:8px">${S.config.bank.toUpperCase()} PAGA A</div>`;
+      h+=`<div style="font-size:10px;font-weight:700;color:var(--green);margin-top:${(payers.length||bancaTotal>0)?12:0}px;margin-bottom:8px">${S.config.bank.toUpperCase()} PAGA A</div>`;
       receivers.forEach(p=>{h+=`<div class="row"><span>${p}</span><span class="net-positive">+${nets[p].toFixed(2)}€</span></div>`;});
     }
     h+='</div>';

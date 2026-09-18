@@ -60,11 +60,33 @@ Distribuir esta URL por WhatsApp al grupo para que todos accedan siempre a la ve
 
 ---
 
+## Motor de apuestas
+
+App adicional (`betting.html`) con sistema de apuestas pari-mutuel para los 20 participantes.
+
+- **URL**: `https://fsuarezdetangil-dev.github.io/RyderCup2026/betting.html`
+- **PIN admin**: `2026`
+- **Banco físico**: Alberto
+- **Máximo por jugador**: 20€
+- **Mercados**: 10 Singles individuales + Resultado final de edición
+
+### Documentación de apuestas
+
+| Fichero | Destinatario | Contenido |
+|---------|-------------|-----------|
+| `guia_betting_rydercup2026_Admin.docx` | Alberto (coordinador) | Rol de banco, pasos de administración de la app, tabla de mercados |
+| `guia_betting_rydercup2026_Player.docx` | Todos los jugadores | Reglas, sistema pari-mutuel, ejemplos de apuestas, apuesta desierta, FAQ |
+
+---
+
 ## Estructura de ficheros
 
 ```
 /
-├── index.html                  ← App completa (CSS + JS inline)
+├── index.html                              ← App principal (CSS + JS inline)
+├── betting.html                            ← Motor de apuestas pari-mutuel
+├── guia_betting_rydercup2026_Admin.docx    ← Guía del coordinador (Alberto)
+├── guia_betting_rydercup2026_Player.docx   ← Guía para apostadores
 ├── /img/
 │   ├── campo-hero.jpg
 │   ├── campo-fairway.jpg
@@ -73,7 +95,7 @@ Distribuir esta URL por WhatsApp al grupo para que todos accedan siempre a la ve
 │   └── torres-cabrera-salon.jpg
 ├── .github/
 │   └── workflows/
-│       └── deploy.yml          ← GitHub Actions auto-deploy
+│       └── deploy.yml                      ← GitHub Actions auto-deploy
 └── README.md
 ```
 

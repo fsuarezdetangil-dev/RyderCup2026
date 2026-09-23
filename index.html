@@ -1126,6 +1126,21 @@ body {
           <label class="ci-label" for="ci-telefono">Teléfono <span>*</span></label>
           <input class="ci-input" type="tel" id="ci-telefono" placeholder="+34 600 000 000" oninput="ciCheckReady()">
         </div>
+
+        <div class="ci-field">
+          <label class="ci-label" for="ci-roommate">Compañero de habitación <span>*</span></label>
+          <select class="ci-select" id="ci-roommate" onchange="ciCheckReady()">
+            <option value="">— Selecciona —</option>
+            <optgroup label="Lobos">
+              <option>Fercho</option><option>Diego</option><option>Gupi</option><option>Herrero</option><option>Jaki</option>
+              <option>Jido</option><option>Juan</option><option>Nacho</option><option>Otegui</option><option>Pedro</option>
+            </optgroup>
+            <optgroup label="Locos">
+              <option>Merello</option><option>Agus</option><option>Alon</option><option>Béjar</option><option>Blasfi</option>
+              <option>Castejas</option><option>Bugo</option><option>Juanma</option><option>Nico</option><option>Prieto</option>
+            </optgroup>
+          </select>
+        </div>
       </div>
 
       <div class="ci-card">
@@ -1831,7 +1846,8 @@ function ciCheckReady() {
   const telefono = document.getElementById('ci-telefono').value.trim();
   const direccion = document.getElementById('ci-direccion').value.trim();
   const soporte = document.getElementById('ci-soporte').value.trim();
-  const ok = nombre && nacimiento && tipoDoc && numDoc && expedicion && caducidad && telefono && direccion
+  const roommate = document.getElementById('ci-roommate').value;
+  const ok = nombre && nacimiento && tipoDoc && numDoc && expedicion && caducidad && telefono && direccion && roommate
     && (tipoDoc !== 'DNI' || soporte);
   document.getElementById('ci-submit-btn').classList.toggle('disabled', !ok);
 }
@@ -1860,6 +1876,7 @@ function submitCheckin() {
     caducidad: document.getElementById('ci-caducidad').value,
     direccion: document.getElementById('ci-direccion').value.trim(),
     soporte: tipoDoc === 'DNI' ? document.getElementById('ci-soporte').value.trim().toUpperCase() : '',
+    roommate: document.getElementById('ci-roommate').value,
   };
 
   document.getElementById('ci-submit-btn').style.display = 'none';

@@ -425,6 +425,32 @@ body {
 .wa-btn:disabled, .wa-btn.disabled { opacity: 0.35; pointer-events: none; }
 .progress-txt { font-size: 12px; color: var(--gold); margin: 0 16px 4px; }
 
+/* Check-in Hotel */
+.ci-card { background: var(--surface); border-left: 3px solid var(--gold); padding: 16px; margin: 0 16px 12px; }
+.ci-card h3 { font-size: 14px; font-weight: 600; margin-bottom: 14px; color: var(--white); }
+.ci-field { margin-bottom: 14px; }
+.ci-label { display: block; font-size: 10px; color: var(--gray); text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 5px; }
+.ci-label span { color: #f5a623; } /* asterisco obligatorio */
+.ci-input, .ci-select {
+  width: 100%; background: var(--bg); border: 1px solid var(--gold-dim);
+  color: var(--white); padding: 10px 12px; font-family: 'Inter', sans-serif;
+  font-size: 14px; box-sizing: border-box; -webkit-appearance: none; border-radius: 0;
+}
+.ci-input:focus, .ci-select:focus { outline: none; border-color: var(--gold); }
+.ci-conditional { display: none; }
+.ci-note { font-size: 11px; color: var(--gold); background: rgba(201,160,82,0.08); padding: 8px 10px; border-left: 2px solid var(--gold); margin-bottom: 14px; }
+.ci-success { text-align: center; padding: 48px 24px; }
+.ci-success-icon { font-size: 52px; margin-bottom: 16px; }
+.ci-success-title { font-family: 'Bebas Neue', cursive; font-size: 30px; color: var(--gold); letter-spacing: 3px; }
+.ci-success-sub { font-size: 13px; color: var(--gray); margin-top: 10px; line-height: 1.5; }
+.ci-submit-btn {
+  display: block; width: calc(100% - 32px); margin: 8px 16px 0;
+  background: var(--gold); color: #000; font-family: 'Bebas Neue', cursive;
+  font-size: 22px; letter-spacing: 2px; text-align: center; padding: 14px;
+  border: none; cursor: pointer; min-height: 54px; transition: opacity 0.2s;
+}
+.ci-submit-btn.disabled { opacity: 0.35; pointer-events: none; }
+
 /* Historial */
 .historial-toggle {
   display: flex; align-items: center; justify-content: space-between;
@@ -1046,6 +1072,134 @@ body {
   </div>
 </section>
 
+<!-- ═══ CHECK-IN HOTEL ═══ -->
+<section id="checkin" style="display:none;">
+  <div style="padding:16px 16px 4px;">
+    <div class="bebas" style="font-size:28px;letter-spacing:3px;color:var(--gold);">CHECK-IN HOTEL</div>
+    <p style="font-size:12px;color:var(--gray);margin-top:4px;line-height:1.5;">Rellena tus datos para adelantar el check-in en el H10 Palacio Colomera. Solo tienes que hacerlo una vez.</p>
+  </div>
+
+  <!-- Selector nombre -->
+  <div class="name-select-wrap">
+    <select class="name-select" id="ci-name" onchange="onCINameChange()">
+      <option value="">— Selecciona tu nombre —</option>
+      <optgroup label="Lobos">
+        <option>Fercho</option><option>Diego</option><option>Gupi</option><option>Herrero</option><option>Jaki</option>
+        <option>Jido</option><option>Juan</option><option>Nacho</option><option>Otegui</option><option>Pedro</option>
+      </optgroup>
+      <optgroup label="Locos">
+        <option>Merello</option><option>Agus</option><option>Alon</option><option>Béjar</option><option>Blasfi</option>
+        <option>Castejas</option><option>Bugo</option><option>Juanma</option><option>Nico</option><option>Prieto</option>
+      </optgroup>
+    </select>
+  </div>
+
+  <!-- Formulario (oculto hasta seleccionar nombre) -->
+  <div id="ci-form" style="display:none;">
+
+    <!-- Estado: ya enviado -->
+    <div id="ci-success" class="ci-success" style="display:none;">
+      <div class="ci-success-icon">✅</div>
+      <div class="ci-success-title">Datos Enviados</div>
+      <div class="ci-success-sub">Tus datos han llegado correctamente.<br>El check-in del hotel está cubierto.</div>
+      <button onclick="ciReset()" style="margin-top:24px;background:transparent;border:1px solid var(--gold-dim);color:var(--gold);font-family:'Inter',sans-serif;font-size:12px;padding:8px 16px;cursor:pointer;">Enviar de nuevo</button>
+    </div>
+
+    <!-- Formulario activo -->
+    <div id="ci-fields">
+      <div class="ci-note">⚠️ Los campos marcados con <span style="color:#f5a623;">*</span> son obligatorios para el hotel.</div>
+
+      <div class="ci-card">
+        <h3>Datos personales</h3>
+
+        <div class="ci-field">
+          <label class="ci-label" for="ci-nombre">Nombre y apellidos <span>*</span></label>
+          <input class="ci-input" type="text" id="ci-nombre" placeholder="Como aparece en el documento" oninput="ciCheckReady()">
+        </div>
+
+        <div class="ci-field">
+          <label class="ci-label" for="ci-nacimiento">Fecha de nacimiento <span>*</span></label>
+          <input class="ci-input" type="date" id="ci-nacimiento" oninput="ciCheckReady()">
+        </div>
+
+        <div class="ci-field">
+          <label class="ci-label" for="ci-nacionalidad">Nacionalidad <span>*</span></label>
+          <select class="ci-select" id="ci-nacionalidad" onchange="ciUpdateConditionals();ciCheckReady()">
+            <option value="">— Selecciona —</option>
+            <option value="España">España</option>
+            <option value="Argentina">Argentina</option>
+            <option value="México">México</option>
+            <option value="Francia">Francia</option>
+            <option value="Reino Unido">Reino Unido</option>
+            <option value="Estados Unidos">Estados Unidos</option>
+            <option value="Otra">Otra</option>
+          </select>
+        </div>
+
+        <div class="ci-field">
+          <label class="ci-label" for="ci-telefono">Teléfono <span>*</span></label>
+          <input class="ci-input" type="tel" id="ci-telefono" placeholder="+34 600 000 000" oninput="ciCheckReady()">
+        </div>
+      </div>
+
+      <div class="ci-card">
+        <h3>Documento de identidad</h3>
+
+        <div class="ci-field">
+          <label class="ci-label" for="ci-tipo-doc">Tipo de documento <span>*</span></label>
+          <select class="ci-select" id="ci-tipo-doc" onchange="ciUpdateConditionals();ciCheckReady()">
+            <option value="">— Selecciona —</option>
+            <option value="DNI">DNI</option>
+            <option value="Pasaporte">Pasaporte</option>
+            <option value="NIE">NIE</option>
+          </select>
+        </div>
+
+        <div class="ci-field">
+          <label class="ci-label" for="ci-num-doc">Número de documento <span>*</span></label>
+          <input class="ci-input" type="text" id="ci-num-doc" placeholder="12345678A" style="text-transform:uppercase" oninput="ciCheckReady()">
+        </div>
+
+        <div class="ci-field">
+          <label class="ci-label" for="ci-expedicion">Fecha de expedición <span>*</span></label>
+          <input class="ci-input" type="date" id="ci-expedicion" oninput="ciCheckReady()">
+        </div>
+
+        <div class="ci-field">
+          <label class="ci-label" for="ci-caducidad">Fecha de caducidad <span>*</span></label>
+          <input class="ci-input" type="date" id="ci-caducidad" oninput="ciCheckReady()">
+        </div>
+
+        <!-- Solo para DNI español -->
+        <div class="ci-conditional" id="ci-soporte-wrap">
+          <div class="ci-field">
+            <label class="ci-label" for="ci-soporte">Número de soporte (dorso del DNI) <span>*</span></label>
+            <input class="ci-input" type="text" id="ci-soporte" placeholder="AAA000000" style="text-transform:uppercase" oninput="ciCheckReady()">
+          </div>
+        </div>
+      </div>
+
+      <!-- Solo para españoles -->
+      <div class="ci-conditional" id="ci-direccion-wrap">
+        <div class="ci-card">
+          <h3>Domicilio <span style="font-size:11px;font-weight:400;color:var(--gray);">(solo residentes en España)</span></h3>
+          <div class="ci-field">
+            <label class="ci-label" for="ci-direccion">Dirección completa <span>*</span></label>
+            <input class="ci-input" type="text" id="ci-direccion" placeholder="Calle, número, piso, ciudad, CP" oninput="ciCheckReady()">
+          </div>
+        </div>
+      </div>
+
+      <button class="ci-submit-btn disabled" id="ci-submit-btn" onclick="submitCheckin()">
+        Enviar al hotel
+      </button>
+      <div id="ci-sending" style="display:none;text-align:center;padding:12px;font-size:13px;color:var(--gray);">Enviando…</div>
+      <div id="ci-error" style="display:none;text-align:center;padding:12px;font-size:12px;color:#f5a623;"></div>
+      <div style="height:16px;"></div>
+    </div>
+  </div>
+</section>
+
 </main>
 
 <!-- ═══ BOTTOM NAV ═══ -->
@@ -1069,6 +1223,10 @@ body {
   <button class="nav-tab" onclick="showSection('yo',this)">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
     <span class="nav-label">Yo</span>
+  </button>
+  <button class="nav-tab" onclick="showSection('checkin',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="11" width="18" height="11" rx="1"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/><circle cx="12" cy="16" r="1" fill="currentColor"/></svg>
+    <span class="nav-label">Hotel</span>
   </button>
 </nav>
 
@@ -1653,6 +1811,109 @@ function handleWA(e) {
   const url = 'https://wa.me/34681637862?text=' + encodeURIComponent(msg);
   window.open(url, '_blank');
   e.preventDefault(); return false;
+}
+
+// ═══════════════════════════════════════
+// CHECK-IN HOTEL
+// ═══════════════════════════════════════
+const CI_SCRIPT_URL = 'APPS_SCRIPT_URL'; // ← reemplaza con tu URL de Apps Script
+
+function onCINameChange() {
+  const name = document.getElementById('ci-name').value;
+  document.getElementById('ci-form').style.display = name ? 'block' : 'none';
+  if (!name) return;
+  // Repoblar nombre completo a partir del apodo
+  const allPlayers = [...LOBOS, ...LOCOS];
+  const p = allPlayers.find(x => x.apodo === name);
+  if (p) document.getElementById('ci-nombre').value = p.nombre;
+  // Comprobar si ya envió datos
+  const sent = localStorage.getItem('rcp14_ci_' + name);
+  document.getElementById('ci-success').style.display = sent ? 'block' : 'none';
+  document.getElementById('ci-fields').style.display = sent ? 'none' : 'block';
+  ciCheckReady();
+}
+
+function ciUpdateConditionals() {
+  const nac = document.getElementById('ci-nacionalidad').value;
+  const doc = document.getElementById('ci-tipo-doc').value;
+  const esEspañol = nac === 'España';
+  const esDNI = doc === 'DNI';
+  document.getElementById('ci-direccion-wrap').style.display = esEspañol ? 'block' : 'none';
+  document.getElementById('ci-soporte-wrap').style.display = (esEspañol && esDNI) ? 'block' : 'none';
+}
+
+function ciCheckReady() {
+  const nombre = document.getElementById('ci-nombre').value.trim();
+  const nacimiento = document.getElementById('ci-nacimiento').value;
+  const nac = document.getElementById('ci-nacionalidad').value;
+  const tipoDoc = document.getElementById('ci-tipo-doc').value;
+  const numDoc = document.getElementById('ci-num-doc').value.trim();
+  const expedicion = document.getElementById('ci-expedicion').value;
+  const caducidad = document.getElementById('ci-caducidad').value;
+  const telefono = document.getElementById('ci-telefono').value.trim();
+  const esEspañol = nac === 'España';
+  const esDNI = tipoDoc === 'DNI';
+  const direccion = document.getElementById('ci-direccion').value.trim();
+  const soporte = document.getElementById('ci-soporte').value.trim();
+  const ok = nombre && nacimiento && nac && tipoDoc && numDoc && expedicion && caducidad && telefono
+    && (!esEspañol || direccion)
+    && (!(esEspañol && esDNI) || soporte);
+  const btn = document.getElementById('ci-submit-btn');
+  btn.classList.toggle('disabled', !ok);
+}
+
+function ciReset() {
+  const name = document.getElementById('ci-name').value;
+  if (name) localStorage.removeItem('rcp14_ci_' + name);
+  document.getElementById('ci-success').style.display = 'none';
+  document.getElementById('ci-fields').style.display = 'block';
+  document.getElementById('ci-error').style.display = 'none';
+}
+
+function submitCheckin() {
+  const name = document.getElementById('ci-name').value;
+  if (!name) return;
+  const nac = document.getElementById('ci-nacionalidad').value;
+  const tipoDoc = document.getElementById('ci-tipo-doc').value;
+  const data = {
+    jugador: name,
+    nombre: document.getElementById('ci-nombre').value.trim(),
+    nacimiento: document.getElementById('ci-nacimiento').value,
+    nacionalidad: nac,
+    telefono: document.getElementById('ci-telefono').value.trim(),
+    tipoDoc,
+    numDoc: document.getElementById('ci-num-doc').value.trim().toUpperCase(),
+    expedicion: document.getElementById('ci-expedicion').value,
+    caducidad: document.getElementById('ci-caducidad').value,
+    direccion: nac === 'España' ? document.getElementById('ci-direccion').value.trim() : '',
+    soporte: (nac === 'España' && tipoDoc === 'DNI') ? document.getElementById('ci-soporte').value.trim().toUpperCase() : '',
+  };
+
+  document.getElementById('ci-submit-btn').style.display = 'none';
+  document.getElementById('ci-sending').style.display = 'block';
+  document.getElementById('ci-error').style.display = 'none';
+
+  fetch(CI_SCRIPT_URL, {
+    method: 'POST',
+    body: JSON.stringify(data),
+  })
+  .then(r => r.json())
+  .then(res => {
+    if (res.result === 'ok') {
+      localStorage.setItem('rcp14_ci_' + name, '1');
+      document.getElementById('ci-sending').style.display = 'none';
+      document.getElementById('ci-fields').style.display = 'none';
+      document.getElementById('ci-success').style.display = 'block';
+    } else {
+      throw new Error(res.message || 'Error');
+    }
+  })
+  .catch(err => {
+    document.getElementById('ci-sending').style.display = 'none';
+    document.getElementById('ci-submit-btn').style.display = 'block';
+    document.getElementById('ci-error').style.display = 'block';
+    document.getElementById('ci-error').textContent = '⚠️ No se pudo enviar. Inténtalo de nuevo o avisa a Fercho.';
+  });
 }
 
 // ═══════════════════════════════════════

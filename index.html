@@ -1123,20 +1123,6 @@ body {
         </div>
 
         <div class="ci-field">
-          <label class="ci-label" for="ci-nacionalidad">Nacionalidad <span>*</span></label>
-          <select class="ci-select" id="ci-nacionalidad" onchange="ciUpdateConditionals();ciCheckReady()">
-            <option value="">— Selecciona —</option>
-            <option value="España">España</option>
-            <option value="Argentina">Argentina</option>
-            <option value="México">México</option>
-            <option value="Francia">Francia</option>
-            <option value="Reino Unido">Reino Unido</option>
-            <option value="Estados Unidos">Estados Unidos</option>
-            <option value="Otra">Otra</option>
-          </select>
-        </div>
-
-        <div class="ci-field">
           <label class="ci-label" for="ci-telefono">Teléfono <span>*</span></label>
           <input class="ci-input" type="tel" id="ci-telefono" placeholder="+34 600 000 000" oninput="ciCheckReady()">
         </div>
@@ -1179,14 +1165,11 @@ body {
         </div>
       </div>
 
-      <!-- Solo para españoles -->
-      <div class="ci-conditional" id="ci-direccion-wrap">
-        <div class="ci-card">
-          <h3>Domicilio <span style="font-size:11px;font-weight:400;color:var(--gray);">(solo residentes en España)</span></h3>
-          <div class="ci-field">
-            <label class="ci-label" for="ci-direccion">Dirección completa <span>*</span></label>
-            <input class="ci-input" type="text" id="ci-direccion" placeholder="Calle, número, piso, ciudad, CP" oninput="ciCheckReady()">
-          </div>
+      <div class="ci-card">
+        <h3>Domicilio</h3>
+        <div class="ci-field">
+          <label class="ci-label" for="ci-direccion">Dirección completa <span>*</span></label>
+          <input class="ci-input" type="text" id="ci-direccion" placeholder="Calle, número, piso, ciudad, CP" oninput="ciCheckReady()">
         </div>
       </div>
 
@@ -1834,32 +1817,23 @@ function onCINameChange() {
 }
 
 function ciUpdateConditionals() {
-  const nac = document.getElementById('ci-nacionalidad').value;
-  const doc = document.getElementById('ci-tipo-doc').value;
-  const esEspañol = nac === 'España';
-  const esDNI = doc === 'DNI';
-  document.getElementById('ci-direccion-wrap').style.display = esEspañol ? 'block' : 'none';
-  document.getElementById('ci-soporte-wrap').style.display = (esEspañol && esDNI) ? 'block' : 'none';
+  const esDNI = document.getElementById('ci-tipo-doc').value === 'DNI';
+  document.getElementById('ci-soporte-wrap').style.display = esDNI ? 'block' : 'none';
 }
 
 function ciCheckReady() {
   const nombre = document.getElementById('ci-nombre').value.trim();
   const nacimiento = document.getElementById('ci-nacimiento').value;
-  const nac = document.getElementById('ci-nacionalidad').value;
   const tipoDoc = document.getElementById('ci-tipo-doc').value;
   const numDoc = document.getElementById('ci-num-doc').value.trim();
   const expedicion = document.getElementById('ci-expedicion').value;
   const caducidad = document.getElementById('ci-caducidad').value;
   const telefono = document.getElementById('ci-telefono').value.trim();
-  const esEspañol = nac === 'España';
-  const esDNI = tipoDoc === 'DNI';
   const direccion = document.getElementById('ci-direccion').value.trim();
   const soporte = document.getElementById('ci-soporte').value.trim();
-  const ok = nombre && nacimiento && nac && tipoDoc && numDoc && expedicion && caducidad && telefono
-    && (!esEspañol || direccion)
-    && (!(esEspañol && esDNI) || soporte);
-  const btn = document.getElementById('ci-submit-btn');
-  btn.classList.toggle('disabled', !ok);
+  const ok = nombre && nacimiento && tipoDoc && numDoc && expedicion && caducidad && telefono && direccion
+    && (tipoDoc !== 'DNI' || soporte);
+  document.getElementById('ci-submit-btn').classList.toggle('disabled', !ok);
 }
 
 function ciReset() {
@@ -1873,20 +1847,19 @@ function ciReset() {
 function submitCheckin() {
   const name = document.getElementById('ci-name').value;
   if (!name) return;
-  const nac = document.getElementById('ci-nacionalidad').value;
   const tipoDoc = document.getElementById('ci-tipo-doc').value;
   const data = {
     jugador: name,
     nombre: document.getElementById('ci-nombre').value.trim(),
     nacimiento: document.getElementById('ci-nacimiento').value,
-    nacionalidad: nac,
+    nacionalidad: 'España',
     telefono: document.getElementById('ci-telefono').value.trim(),
     tipoDoc,
     numDoc: document.getElementById('ci-num-doc').value.trim().toUpperCase(),
     expedicion: document.getElementById('ci-expedicion').value,
     caducidad: document.getElementById('ci-caducidad').value,
-    direccion: nac === 'España' ? document.getElementById('ci-direccion').value.trim() : '',
-    soporte: (nac === 'España' && tipoDoc === 'DNI') ? document.getElementById('ci-soporte').value.trim().toUpperCase() : '',
+    direccion: document.getElementById('ci-direccion').value.trim(),
+    soporte: tipoDoc === 'DNI' ? document.getElementById('ci-soporte').value.trim().toUpperCase() : '',
   };
 
   document.getElementById('ci-submit-btn').style.display = 'none';

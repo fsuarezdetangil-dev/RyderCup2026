@@ -1893,26 +1893,25 @@ function submitCheckin() {
   document.getElementById('ci-sending').style.display = 'block';
   document.getElementById('ci-error').style.display = 'none';
 
+  // no-cors evita el preflight CORS con Google Apps Script.
+  // La respuesta es opaca (no legible), pero el dato llega al Sheet.
   fetch(CI_SCRIPT_URL, {
     method: 'POST',
+    mode: 'no-cors',
+    headers: { 'Content-Type': 'text/plain' },
     body: JSON.stringify(data),
   })
-  .then(r => r.json())
-  .then(res => {
-    if (res.result === 'ok') {
-      localStorage.setItem('rcp14_ci_' + name, '1');
-      document.getElementById('ci-sending').style.display = 'none';
-      document.getElementById('ci-fields').style.display = 'none';
-      document.getElementById('ci-success').style.display = 'block';
-    } else {
-      throw new Error(res.message || 'Error');
-    }
+  .then(() => {
+    localStorage.setItem('rcp14_ci_' + name, '1');
+    document.getElementById('ci-sending').style.display = 'none';
+    document.getElementById('ci-fields').style.display = 'none';
+    document.getElementById('ci-success').style.display = 'block';
   })
-  .catch(err => {
+  .catch(() => {
     document.getElementById('ci-sending').style.display = 'none';
     document.getElementById('ci-submit-btn').style.display = 'block';
     document.getElementById('ci-error').style.display = 'block';
-    document.getElementById('ci-error').textContent = '⚠️ No se pudo enviar. Inténtalo de nuevo o avisa a Fercho.';
+    document.getElementById('ci-error').textContent = '⚠️ Error de red. Inténtalo de nuevo o avisa a Fercho.';
   });
 }
 

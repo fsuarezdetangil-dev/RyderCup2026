@@ -895,11 +895,18 @@ function updPickOpts(){
   } else {
     const id=parseInt(t.slice(1));
     const m=S.singles.find(s=>s.id===id);
-    area.innerHTML=`<div class="form-group"><label class="form-label">Apuesta a</label>
-      <div class="toggle-group">
-        <div class="toggle-btn" id="pk-loco" onclick="setPick('loco')">🔴 ${m.loco}</div>
-        <div class="toggle-btn" id="pk-lobo" onclick="setPick('lobo')">🔵 ${m.lobo}</div>
-      </div></div>`;
+    const p=document.getElementById('bp')?.value;
+    const bettorSide=p===m.loco?'loco':p===m.lobo?'lobo':null;
+    const locoBtn=bettorSide==='lobo'
+      ?`<div class="toggle-btn" style="opacity:0.3;pointer-events:none;cursor:not-allowed" title="No puedes apostar contra ti mismo">🔴 ${m.loco}</div>`
+      :`<div class="toggle-btn" id="pk-loco" onclick="setPick('loco')">🔴 ${m.loco}${bettorSide==='loco'?' 👤':''}</div>`;
+    const loboBtn=bettorSide==='loco'
+      ?`<div class="toggle-btn" style="opacity:0.3;pointer-events:none;cursor:not-allowed" title="No puedes apostar contra ti mismo">🔵 ${m.lobo}</div>`
+      :`<div class="toggle-btn" id="pk-lobo" onclick="setPick('lobo')">🔵 ${m.lobo}${bettorSide==='lobo'?' 👤':''}</div>`;
+    const nota=bettorSide?`<div style="font-size:10px;color:var(--gold);margin-bottom:6px">👤 Juegas en este partido — solo puedes apostar a tu propio lado</div>`:'';
+    area.innerHTML=`<div class="form-group">${nota}<label class="form-label">Apuesta a</label>
+      <div class="toggle-group">${locoBtn}${loboBtn}</div></div>`;
+    if(bettorSide) setPick(bettorSide);
   }
 }
 
@@ -985,6 +992,11 @@ function addBet(){
   if(!pick){toast('Selecciona a quién apuestas');return;}
   if(!amt||amt<1){toast('Importe inválido');return;}
   if(spent(p)+amt>MAX){toast(`Superarías el máximo de ${MAX}€`);return;}
+  if(t!=='final'){
+    const m=S.singles.find(s=>s.id===parseInt(t.slice(1)));
+    if(m&&p===m.loco&&pick!=='loco'){toast('No puedes apostar contra ti mismo');return;}
+    if(m&&p===m.lobo&&pick!=='lobo'){toast('No puedes apostar contra ti mismo');return;}
+  }
   S.bets.push({id:Date.now(),bettor:p,type:t==='final'?'final':'singles',matchId:t!=='final'?parseInt(t.slice(1)):null,pick,amount:amt,cash:cash||false,ts:new Date().toISOString()});
   save(); pick=null; toast(`Apuesta registrada ✓`); renderAdmin();
 }

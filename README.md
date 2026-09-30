@@ -87,7 +87,7 @@ La hoja `Estado` guarda los datos actuales y `Historial` una copia de cada cambi
 
 | Fichero | Destinatario | Contenido |
 |---------|-------------|-----------|
-| `guia_betting_rydercup2026_Admin.docx` | Alberto (coordinador) | Rol de banco, pasos de administración de la app, tabla de mercados |
+| `guia_betting_rydercup2026_Admin.docx` | Alberto (coordinador) | Cómo funciona la app y la nube, ensayo previo, pasos del fin de semana, pagos, qué hacer si algo falla |
 | `guia_betting_rydercup2026_Player.docx` | Todos los jugadores | Reglas, sistema pari-mutuel, ejemplos de apuestas, apuesta desierta, FAQ |
 
 ---

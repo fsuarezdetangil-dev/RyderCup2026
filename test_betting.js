@@ -317,6 +317,31 @@ console.log('\n── 11. AUTO-APUESTA: validación pick propio ─────�
   assert('Apuesta al Final: sin restricción de auto-apuesta', true);
 }
 
+// ── 12. LIQUIDACIÓN EN EFECTIVO (dinero cobrado al apostar) ─────────────────
+console.log('\n── 12. LIQUIDACIÓN EN EFECTIVO ──────────────────────');
+{
+  // A cada jugador se le entrega lo que pagó + su saldo neto
+  const bets=[
+    {...bet('Jaki','lobo',10,'singles',1),cash:true},
+    {...bet('Pedro','loco',10,'singles',1),cash:true},
+    {...bet('Juan','lobo',5,'singles',2),cash:true},
+    {...bet('Nico','loco',5,'singles',2),cash:true},
+    {...bet('Bugo','locos',20,'final',null),cash:true},
+    {...bet('Diego','locos',5,'singles',3),cash:true},
+  ];
+  const S={singles:[{id:1,winner:'lobo'},{id:2,winner:'empate'},{id:3,winner:'lobo'}],finalResult:'lobos',bets};
+  const {net,bancaTotal}=calcAll(S);
+  const paid=p=>bets.filter(b=>b.bettor===p&&b.cash).reduce((s,b)=>s+b.amount,0);
+  const dar=p=>paid(p)+net[p];
+  assert('Ganador: Jaki apostó 10 → recibe 20€', approx(dar('Jaki'),20));
+  assert('Perdedor: Pedro apostó 10 → recibe 0€', approx(dar('Pedro'),0));
+  assert('Empate: Juan apostó 5 → le devuelven 5€', approx(dar('Juan'),5));
+  assert('Final desierta: Bugo recibe 0€ (banca retiene 20€)', approx(dar('Bugo'),0) && approx(bancaTotal,25));
+  const cash=bets.reduce((s,b)=>s+b.amount,0);
+  const entregado=ALL.reduce((s,p)=>s+Math.max(0,dar(p)),0);
+  assert('Entregado + banca = efectivo recibido', approx(entregado+bancaTotal,cash), `${entregado}+${bancaTotal} vs ${cash}`);
+}
+
 // ── RESUMEN ──────────────────────────────────────────────────────────────────
 console.log('\n══════════════════════════════════════════════════════');
 console.log(`  RESULTADO: ${passed} ✅  pasados  |  ${failed} ❌  fallados`);

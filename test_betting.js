@@ -342,6 +342,24 @@ console.log('\n── 12. LIQUIDACIÓN EN EFECTIVO ─────────�
   assert('Entregado + banca = efectivo recibido', approx(entregado+bancaTotal,cash), `${entregado}+${bancaTotal} vs ${cash}`);
 }
 
+// ── 13. MARCADOR Y GANADOR AUTOMÁTICO DE LA EDICIÓN ────────────────────────
+console.log('\n── 13. GANADOR AUTOMÁTICO DE LA EDICIÓN ─────────────');
+{
+  // Réplica de pts/score/autoFinal del betting.html
+  const pts=(r,max)=>r==='loco'?[max,0]:r==='lobo'?[0,max]:r==='empate'?[max/2,max/2]:[0,0];
+  const autoFinal=(sat,sg)=>{
+    const sum=(arr,max)=>arr.reduce((a,r)=>{const[l,w]=pts(r,max);return[a[0]+l,a[1]+w];},[0,0]);
+    const s1=sum(sat,0.5), s2=sum(sg,1), L=s1[0]+s2[0], Lo=s1[1]+s2[1];
+    return Lo>=7.5?'lobos':L>7.5?'locos':null;
+  };
+  const f=(n,v)=>Array(n).fill(v);
+  assert('Empate 7,5–7,5 → Lobos retienen', autoFinal(f(10,'empate'),[...f(5,'loco'),...f(5,'lobo')])==='lobos');
+  assert('Locos 7,75 → Locos ganan', autoFinal([...f(9,'empate'),'loco'],[...f(5,'loco'),...f(5,'lobo')])==='locos');
+  assert('Sin decidir con singles pendientes', autoFinal(f(10,'empate'),f(5,'loco'))===null);
+  assert('Decidido antes de acabar: Lobos llegan a 7,5', autoFinal(f(10,'lobo'),[...f(3,'lobo'),...f(7,null)])==='lobos');
+  assert('Empate sábado cuenta 0,25', approx(pts('empate',0.5)[0],0.25));
+}
+
 // ── RESUMEN ──────────────────────────────────────────────────────────────────
 console.log('\n══════════════════════════════════════════════════════');
 console.log(`  RESULTADO: ${passed} ✅  pasados  |  ${failed} ❌  fallados`);

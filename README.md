@@ -79,6 +79,8 @@ Los datos se guardan en el móvil del admin y se sincronizan con una Google Shee
 3. **Implementar → Nueva implementación → Aplicación web** · Ejecutar como: *Yo* · Acceso: *Cualquier usuario* → autorizar
 4. Copiar la URL que termina en `/exec` en `SYNC_URL` de `betting.html` y subir a `main`
 
+Los resultados del sábado (Fourball y Greensome) se introducen también en la app de apuestas (Admin → Resultados); con ellos y los Singles la app calcula sola el ganador de la edición (Lobos retienen con 7,5), con opción de corregirlo a mano.
+
 La hoja `Estado` guarda los datos actuales y `Historial` una copia de cada cambio. Sin `SYNC_URL` la app funciona solo en local (como antes).
 
 ### Documentación de apuestas

@@ -387,7 +387,8 @@ function defaultState(){
       published: false      // results published
     },
     singles: Array.from({length:10},(_,i)=>({id:i+1,loco:null,lobo:null,winner:null})),
-    finalResult: null,      // 'locos' | 'lobos'
+    saturday: { fb: Array(5).fill(null), gs: Array(5).fill(null) }, // 'loco' | 'empate' | 'lobo'
+    finalResult: null,      // corrección manual: 'locos' | 'lobos' (si no, se calcula del marcador)
     bets: [],               // {id,bettor,type,matchId,pick,amount,cash,ts}
     rev: 0,                 // revision: sube con cada cambio del admin
     updatedAt: null
@@ -523,10 +524,22 @@ function spent(p){ return S.bets.filter(b=>b.bettor===p).reduce((s,b)=>s+b.amoun
 function myBets(p){ return S.bets.filter(b=>b.bettor===p); }
 function matchBets(id){ return S.bets.filter(b=>b.type==='singles'&&b.matchId===id); }
 function finalBets(){ return S.bets.filter(b=>b.type==='final'); }
+// ── MARCADOR ── Sábado: 0,5 por partido (0,25 empate) · Singles: 1 (0,5 empate) · Total 15
+function pts(r,max){ return r==='loco'?[max,0]:r==='lobo'?[0,max]:r==='empate'?[max/2,max/2]:[0,0]; }
+function score(){
+  const sat=S.saturday||{fb:[],gs:[]};
+  const sum=(arr,max)=>arr.reduce((a,r)=>{const[l,w]=pts(r,max);return[a[0]+l,a[1]+w];},[0,0]);
+  const fb=sum(sat.fb||[],0.5), gs=sum(sat.gs||[],0.5), sg=sum(S.singles.map(m=>m.winner),1);
+  return {fb,gs,sg,satL:fb[0]+gs[0],satLo:fb[1]+gs[1],L:fb[0]+gs[0]+sg[0],Lo:fb[1]+gs[1]+sg[1],
+    satDone:[...(sat.fb||[]),...(sat.gs||[])].filter(Boolean).length,sgDone:S.singles.filter(m=>m.winner).length};
+}
+// Los puntos solo suben: en cuanto alguien alcanza la cifra, la edición está decidida
+function autoFinal(){ const t=score(); return t.Lo>=7.5?'lobos':t.L>7.5?'locos':null; }
+function finalWinner(){ return S.finalResult||autoFinal(); }
 function paidCash(p){ return S.bets.filter(b=>b.bettor===p&&b.cash).reduce((s,b)=>s+b.amount,0); }
 // Resultado de una apuesta concreta (null si su partido aún no ha terminado)
 function betOutcome(b){
-  const w=b.type==='singles'?S.singles.find(s=>s.id===b.matchId)?.winner:S.finalResult;
+  const w=b.type==='singles'?S.singles.find(s=>s.id===b.matchId)?.winner:finalWinner();
   if(!w) return null;
   const bets=b.type==='singles'?matchBets(b.matchId):finalBets();
   return calcMarket(bets,w,w==='empate').find(r=>r.id===b.id)||null;
@@ -568,7 +581,8 @@ function calcAll() {
     const bets=matchBets(m.id); if(!bets.length) return;
     addRes(calcMarket(bets,m.winner,m.winner==='empate'));
   });
-  if(S.finalResult) addRes(calcMarket(finalBets(),S.finalResult,false));
+  const fw=finalWinner();
+  if(fw) addRes(calcMarket(finalBets(),fw,false));
   return {net, bancaTotal};
 }
 
@@ -759,7 +773,7 @@ function renderCuadro(){
         <div style="font-size:9px;color:var(--gray);text-align:center">${ft}€<br>POZO</div>
         <div class="odds-box"><div class="odds-num" style="color:var(--lobos)">${wp2}€</div><div class="odds-label">${wp2&&ft?'×'+(ft/wp2).toFixed(2):'—'}</div></div>
       </div>
-      ${S.finalResult?`<div style="text-align:center;margin-top:8px"><span class="badge ${S.finalResult==='locos'?'badge-locos':'badge-lobos'}">${S.finalResult==='locos'?'Locos ganaron':'Lobos ganaron/retuvieron'}</span></div>`:''}
+      ${finalWinner()?`<div style="text-align:center;margin-top:8px"><span class="badge ${finalWinner()==='locos'?'badge-locos':'badge-lobos'}">${finalWinner()==='locos'?'Locos ganaron':'Lobos ganaron/retuvieron'}</span></div>`:''}
     </div>`;
   }
   el.innerHTML=h;
@@ -908,7 +922,7 @@ function toggleClosed(){S.config.closed=!S.config.closed;if(S.config.closed)S.co
 function togglePublish(){
   if(!S.config.published){
     const noRes=S.singles.filter(s=>s.loco&&s.lobo).some(s=>!s.winner);
-    if(noRes||S.finalResult===null){toast('Introduce primero todos los resultados');return;}
+    if(noRes||!finalWinner()){toast('Introduce primero todos los resultados');return;}
   }
   S.config.published=!S.config.published;save();renderAdmin();
   toast(S.config.published?'Resultados publicados ✓':'Resultados ocultados');
@@ -1134,13 +1148,31 @@ function delBet(i){
   S.bets.splice(i,1); save(); renderAdmin(); toast('Eliminada');
 }
 
+function resBtns(sel,fn,lbl){
+  return `<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px">
+    <button class="toggle-btn${sel==='loco'?' sel-locos':''}" onclick="${fn}'loco')" style="font-size:11px;padding:8px">🔴 ${lbl[0]}</button>
+    <button class="toggle-btn${sel==='empate'?' sel-gold':''}" onclick="${fn}'empate')" style="font-size:11px;padding:8px">⚖️ Empate</button>
+    <button class="toggle-btn${sel==='lobo'?' sel-lobos':''}" onclick="${fn}'lobo')" style="font-size:11px;padding:8px">🔵 ${lbl[1]}</button>
+  </div>`;
+}
 function adminResults(){
-  let h=`<div class="card-title">Resultado Final de Edición</div>
-    <div class="toggle-group" style="margin-bottom:16px">
-      <div class="toggle-btn${S.finalResult==='locos'?' sel-locos':''}" onclick="setFinal('locos')">🔴 Locos ganaron</div>
-      <div class="toggle-btn${S.finalResult==='lobos'?' sel-lobos':''}" onclick="setFinal('lobos')">🔵 Lobos ganaron/retuvieron</div>
-    </div>
-    <div class="card-title">Resultados Singles</div>`;
+  const t=score(), auto=autoFinal(), fw=finalWinner();
+  const fmt=n=>String(n).replace('.',',');
+  const lbl=v=>v==='locos'?'🔴 Locos ganan':'🔵 Lobos ganan/retienen';
+  let h=`<div class="card" style="text-align:center">
+    <div class="card-title">Marcador de la edición</div>
+    <div style="font-family:'Bebas Neue',cursive;font-size:32px"><span style="color:var(--locos)">${fmt(t.L)}</span><span style="color:var(--gray);font-size:20px"> – </span><span style="color:var(--lobos)">${fmt(t.Lo)}</span></div>
+    <div style="font-size:11px;color:var(--gray)">Sábado ${fmt(t.satL)}–${fmt(t.satLo)} (${t.satDone}/10) · Singles ${fmt(t.sg[0])}–${fmt(t.sg[1])} (${t.sgDone}/10)</div>
+    <div style="font-size:12px;margin-top:8px;font-weight:600">${fw?lbl(fw)+(S.finalResult?' <span style="color:var(--gold)">(corregido a mano)</span>':' <span style="color:var(--gray)">(automático)</span>'):'<span style="color:var(--gray)">Edición sin decidir</span>'}</div>
+    <div style="font-size:10px;color:var(--gray);margin-top:4px">Se calcula solo: Lobos retienen con 7,5 · Locos ganan con más de 7,5</div>
+  </div>`;
+  [['fb','Sábado · Fourball (hoyos 1-9)'],['gs','Sábado · Greensome (hoyos 10-18)']].forEach(([k,title])=>{
+    h+=`<div class="card-title" style="margin-top:12px">${title}</div>`;
+    S.saturday[k].forEach((r,i)=>{
+      h+=`<div class="match-card" style="margin-bottom:8px"><div style="font-size:10px;color:var(--gray);font-weight:700;margin-bottom:6px">PARTIDO #${i+1}</div>${resBtns(r,`setSat('${k}',${i},`,['Locos','Lobos'])}</div>`;
+    });
+  });
+  h+=`<div class="card-title" style="margin-top:12px">Domingo · Singles</div>`;
   S.singles.forEach((m,i)=>{
     if(!m.loco||!m.lobo){h+=`<div style="font-size:11px;color:var(--gray);padding:6px 0">Partido #${m.id}: sin emparejamiento</div>`;return;}
     h+=`<div class="match-card" style="margin-bottom:8px">
@@ -1150,19 +1182,20 @@ function adminResults(){
         <span style="color:var(--gray);font-size:11px">vs</span>
         <span class="lobo-text" style="font-weight:600">${m.lobo}</span>
       </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px">
-        <button class="toggle-btn${m.winner==='loco'?' sel-locos':''}" onclick="setSRes(${i},'loco')" style="font-size:11px;padding:8px">🔴 ${m.loco}</button>
-        <button class="toggle-btn${m.winner==='empate'?' sel-gold':''}" onclick="setSRes(${i},'empate')" style="font-size:11px;padding:8px">⚖️ Empate</button>
-        <button class="toggle-btn${m.winner==='lobo'?' sel-lobos':''}" onclick="setSRes(${i},'lobo')" style="font-size:11px;padding:8px">🔵 ${m.lobo}</button>
-      </div>
+      ${resBtns(m.winner,`setSRes(${i},`,[m.loco,m.lobo])}
     </div>`;
   });
-  const done=S.singles.filter(s=>s.loco&&s.lobo&&s.winner).length;
-  const total=S.singles.filter(s=>s.loco&&s.lobo).length;
-  h+=`<div style="text-align:center;font-size:12px;color:var(--gray);margin-top:8px">${done}/${total} resultados · Final: ${S.finalResult||'pendiente'}</div>`;
+  h+=`<div class="card-title" style="margin-top:12px">Corregir resultado de la edición</div>
+    <div style="font-size:11px;color:var(--gray);margin-bottom:8px">Solo si el automático no es correcto (p.ej. falta algún resultado del sábado).</div>
+    <div class="toggle-group" style="margin-bottom:8px">
+      <div class="toggle-btn${S.finalResult==='locos'?' sel-locos':''}" onclick="setFinal('locos')">🔴 Locos ganaron</div>
+      <div class="toggle-btn${S.finalResult==='lobos'?' sel-lobos':''}" onclick="setFinal('lobos')">🔵 Lobos ganaron/retuvieron</div>
+    </div>
+    ${S.finalResult?`<button class="btn btn-outline btn-sm" onclick="setFinal(null)">↺ Volver a automático${auto?' ('+lbl(auto)+')':''}</button>`:''}`;
   return h;
 }
-function setFinal(v){S.finalResult=v;save();renderAdmin();toast(`Final: ${v==='locos'?'Locos':'Lobos'} ganaron ✓`);}
+function setFinal(v){S.finalResult=v;save();renderAdmin();toast(v?`Corregido: ${v==='locos'?'Locos':'Lobos'} ganaron ✓`:'Resultado automático ✓');}
+function setSat(k,i,w){S.saturday[k][i]=S.saturday[k][i]===w?null:w;save();renderAdmin();toast(`${k==='fb'?'Fourball':'Greensome'} #${i+1}: ${S.saturday[k][i]?(w==='empate'?'Empate':w==='loco'?'Locos':'Lobos'):'borrado'} ✓`);}
 function setSRes(i,w){S.singles[i].winner=w;save();renderAdmin();toast(`Partido #${i+1}: ${w==='empate'?'Empate (push)':w==='loco'?S.singles[i].loco+' ganó':S.singles[i].lobo+' ganó'} ✓`);}
 
 function adminData(){
@@ -1249,58 +1282,37 @@ function playerStatCard(apodo, teamColor){
   </div>`;
 }
 
-// Reads Saturday scores from index.html's localStorage (rcp14_state)
-function getSatScores(){
-  try{
-    const raw=localStorage.getItem('rcp14_state');
-    if(!raw) return null;
-    const idx=JSON.parse(raw);
-    const pts=(r,max)=>{
-      if(!r) return [null,null];
-      if(r==='W') return [max,0];
-      if(r==='L') return [0,max];
-      if(r==='H') return [max/2,max/2];
-      return [null,null];
-    };
-    let fsL=0,fsLo=0,fbL=0,fbLo=0,hasFS=false,hasFB=false;
-    (idx.results_fs||[]).forEach(r=>{const[a,b]=pts(r,0.5);if(a!==null){fsL+=a;fsLo+=b;hasFS=true;}});
-    (idx.results_fb||[]).forEach(r=>{const[a,b]=pts(r,0.5);if(a!==null){fbL+=a;fbLo+=b;hasFB=true;}});
-    if(!hasFS&&!hasFB) return null;
-    return{fsL,fsLo,fbL,fbLo,parL:fsL+fbL,parLo:fsLo+fbLo,hasFS,hasFB};
-  }catch(e){return null;}
-}
-
 // ── TAB: SINGLES ───────────────────────────────────────────────────────────
 function renderSingles(){
   const el=document.getElementById('singles-content');
   let h='';
 
-  // Saturday scoreboard
-  const sat=getSatScores();
-  if(sat){
-    const adv=sat.parL>sat.parLo?'Locos':'Lobos';
-    const tied=sat.parL===sat.parLo;
+  // Marcador (sábado + singles), introducido por el admin en Admin → Resultados
+  const t=score();
+  if(t.satDone||t.sgDone){
+    const fmt=n=>String(n).replace('.',',');
+    const tied=t.L===t.Lo, adv=t.L>t.Lo?'Locos':'Lobos';
     const advColor=tied?'var(--gold)':adv==='Locos'?'var(--locos)':'var(--lobos)';
+    const fw=finalWinner();
+    const row=(name,[l,w])=>`<div class="row" style="padding:7px 0;font-size:12px"><span style="color:var(--gray)">${name}</span>
+      <span><span class="loco-text" style="font-weight:700">${fmt(l)}</span><span style="color:var(--gray)"> – </span><span class="lobo-text" style="font-weight:700">${fmt(w)}</span></span></div>`;
     h+=`<div class="card" style="margin-bottom:16px;border-color:${advColor}">
-      <div class="card-title">Marcador Sábado</div>
+      <div class="card-title">Marcador de la edición</div>
       <div style="margin-bottom:10px">
-        ${sat.hasFS?`<div class="row" style="padding:7px 0;font-size:12px"><span style="color:var(--gray)">Foursomes</span>
-          <span><span class="loco-text" style="font-weight:700">${sat.fsL}</span><span style="color:var(--gray)"> – </span><span class="lobo-text" style="font-weight:700">${sat.fsLo}</span></span></div>`:''}
-        ${sat.hasFB?`<div class="row" style="padding:7px 0;font-size:12px"><span style="color:var(--gray)">Fourball</span>
-          <span><span class="loco-text" style="font-weight:700">${sat.fbL}</span><span style="color:var(--gray)"> – </span><span class="lobo-text" style="font-weight:700">${sat.fbLo}</span></span></div>`:''}
+        ${row('Sábado · Fourball',t.fb)}${row('Sábado · Greensome',t.gs)}${t.sgDone?row(`Domingo · Singles (${t.sgDone}/10)`,t.sg):''}
       </div>
       <div style="text-align:center;background:var(--surface2);border-radius:8px;padding:10px">
-        <div style="font-size:10px;color:var(--gray);margin-bottom:4px;text-transform:uppercase;letter-spacing:1px">Parcial Sábado</div>
+        <div style="font-size:10px;color:var(--gray);margin-bottom:4px;text-transform:uppercase;letter-spacing:1px">${t.sgDone?'Total':'Parcial Sábado'}</div>
         <div style="font-family:'Bebas Neue',cursive;font-size:28px">
-          <span style="color:var(--locos)">${sat.parL}</span>
+          <span style="color:var(--locos)">${fmt(t.L)}</span>
           <span style="color:var(--gray);font-size:18px"> – </span>
-          <span style="color:var(--lobos)">${sat.parLo}</span>
+          <span style="color:var(--lobos)">${fmt(t.Lo)}</span>
         </div>
-        <div style="font-size:11px;margin-top:4px;color:${advColor};font-weight:600">
-          ${tied?'Empatados — todo se decide en los Singles':adv+' van por delante · Necesitan los Singles'}
+        <div style="font-size:11px;margin-top:4px;color:${fw?(fw==='locos'?'var(--locos)':'var(--lobos)'):advColor};font-weight:600">
+          ${fw?(fw==='locos'?'🏆 Locos ganan la edición':'🏆 Lobos ganan/retienen la edición'):tied?'Empatados — todo se decide en los Singles':`${adv} van por delante · Locos necesitan ${fmt(Math.max(0,7.75-t.L))} pts más · Lobos ${fmt(Math.max(0,7.5-t.Lo))}`}
         </div>
         <div style="font-size:10px;color:var(--gray);margin-top:2px">
-          Para ganar: >7.5 pts · Lobos retienen con empate 7.5–7.5
+          Para ganar: >7,5 pts · Lobos retienen con empate 7,5–7,5
         </div>
       </div>
     </div>`;
@@ -1308,7 +1320,7 @@ function renderSingles(){
     h+=`<div class="card" style="margin-bottom:16px;border-style:dashed">
       <div class="card-title">Marcador Sábado</div>
       <div style="font-size:12px;color:var(--gray);text-align:center;padding:8px 0">
-        Disponible automáticamente cuando el admin introduzca<br>los resultados del sábado en la app principal
+        Aparecerá cuando el admin introduzca<br>los resultados del sábado
       </div>
     </div>`;
   }

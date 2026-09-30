@@ -70,11 +70,24 @@ App adicional (`betting.html`) con sistema de apuestas pari-mutuel para los 20 p
 - **Máximo por jugador**: 20€
 - **Mercados**: 10 Singles individuales + Resultado final de edición
 
+### Nube (Google Sheets) — para que todos vean las apuestas
+
+Los datos se guardan en el móvil del admin y se sincronizan con una Google Sheet, de modo que cualquier participante que abra el link ve sus apuestas, los resultados según acaban los partidos y la liquidación. Configuración (una vez):
+
+1. Crear una Google Sheet nueva → **Extensiones → Apps Script**
+2. Pegar el contenido de `betting_apps_script.gs` y guardar
+3. **Implementar → Nueva implementación → Aplicación web** · Ejecutar como: *Yo* · Acceso: *Cualquier usuario* → autorizar
+4. Copiar la URL que termina en `/exec` en `SYNC_URL` de `betting.html` y subir a `main`
+
+Los resultados del sábado (Fourball y Greensome) se introducen también en la app de apuestas (Admin → Resultados); con ellos y los Singles la app calcula sola el ganador de la edición (Lobos retienen con 7,5), con opción de corregirlo a mano.
+
+La hoja `Estado` guarda los datos actuales y `Historial` una copia de cada cambio. Sin `SYNC_URL` la app funciona solo en local (como antes).
+
 ### Documentación de apuestas
 
 | Fichero | Destinatario | Contenido |
 |---------|-------------|-----------|
-| `guia_betting_rydercup2026_Admin.docx` | Alberto (coordinador) | Rol de banco, pasos de administración de la app, tabla de mercados |
+| `guia_betting_rydercup2026_Admin.docx` | Alberto (coordinador) | Cómo funciona la app y la nube, ensayo previo, pasos del fin de semana, pagos, qué hacer si algo falla |
 | `guia_betting_rydercup2026_Player.docx` | Todos los jugadores | Reglas, sistema pari-mutuel, ejemplos de apuestas, apuesta desierta, FAQ |
 
 ---
